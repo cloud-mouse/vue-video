@@ -1,0 +1,45 @@
+@url=http://localhost:3001
+
+### 用户注册
+POST {{url}}/admin-api/user/register
+Content-Type: application/json
+
+{
+  "username": "zh4554",
+  "password": "123456",
+  "role": "60386f65e70094162065883f"
+}
+
+### 用户登录
+POST {{url}}/admin-api/user/login
+Content-Type: application/json
+
+{
+  "username": "zh4554",
+  "password": "123456"
+}
+
+### 用户信息
+GET  {{url}}/admin-api/user/info
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwMzhhZGU4ZGJlNzBiMDczMGY3MGI1NCIsImlhdCI6MTYxNDMyNzI5Nn0.ZdRuD8Pt8uus3djfMsBOAyQ7MiX-SxY6T7NPiAJnhDM
+### 用户列表
+GET  {{url}}/admin-api/user/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwMzhhZGU4ZGJlNzBiMDczMGY3MGI1NCIsImlhdCI6MTYxNDMyNzI5Nn0.ZdRuD8Pt8uus3djfMsBOAyQ7MiX-SxY6T7NPiAJnhDM
+
+### 删除用户
+DELETE   {{url}}/admin-api/user/?id=6038a95238a7122be440e0c0
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwMzhhZGU4ZGJlNzBiMDczMGY3MGI1NCIsImlhdCI6MTYxNDMyNzI5Nn0.ZdRuD8Pt8uus3djfMsBOAyQ7MiX-SxY6T7NPiAJnhDM
+
+### 创建角色
+POST {{url}}/admin-api/role/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwMzhhZGU4ZGJlNzBiMDczMGY3MGI1NCIsImlhdCI6MTYxNDMyNzI5Nn0.ZdRuD8Pt8uus3djfMsBOAyQ7MiX-SxY6T7NPiAJnhDM
+Content-Type: application/json
+
+{
+  "role_name": "管理员",
+  "permission": "1,2,3,4,5,6"
+}
+
+### 获取角色列表
+GET  {{url}}/admin-api/role/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwMzg1ODNhZDYyZTZkMGJiMDg4MTY4ZSIsImlhdCI6MTYxNDMxMDUwNH0.xmihbABEC83qCdTL9Tn54nMQaqFz-7hpGDLuj4pGitQ

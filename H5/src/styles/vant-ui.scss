@@ -1,0 +1,17 @@
+#app{
+  .van-nav-bar {
+    .van-icon{
+      color: #323233;
+    }
+    .van-nav-bar__right{
+      .van-nav-bar__text{
+        color: #ff6034;
+      }
+    }
+  }
+}
+
+.custom-image .van-empty__image {
+  width: 50px;
+  height: 50px;
+}
