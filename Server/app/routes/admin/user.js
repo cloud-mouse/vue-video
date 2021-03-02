@@ -6,12 +6,13 @@ const checkToken = require('../../middleware/checkToken')
 // 用户
 router.post('/register', AdminUserController.register);
 router.post('/login', AdminUserController.login);
+// 获取用户信息
+router.get('/info', checkToken, AdminUserController.userInfo);
 
 // 用户列表
 router.get('/', checkToken, AdminUserController.getList);
+router.post('/', checkToken, AdminUserController.register);
+router.patch('/', checkToken, AdminUserController.updateOne);
 router.delete('/', checkToken, AdminUserController.deleteUser);
-
-// 获取用户信息
-router.get('/info', checkToken, AdminUserController.userInfo);
 
 module.exports = router;

@@ -1,6 +1,6 @@
 module.exports = {
 
-  title: '云易绣管理后台',
+  title: '影视大全管理后台',
 
   /**
    * @type {boolean} true | false

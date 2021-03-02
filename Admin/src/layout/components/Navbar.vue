@@ -9,20 +9,12 @@
         <div class="avatar-wrapper">
           <img v-if="adminInfo.logo" :src="adminInfo.logo" class="user-avatar">
           <img v-else src="@/assets/images/avator.jpg" class="user-avatar">
-          <span>{{ adminInfo.name }}</span>
+          <span>{{ adminInfo.username }}</span>
           <i class="el-icon-caret-bottom" />
         </div>
         <el-dropdown-menu slot="dropdown" class="user-dropdown">
           <el-dropdown-item class="dropdown-item">
-            <div v-if="adminInfo.role_type!=1" class="shop-info">
-              店铺：<span>{{ adminInfo.shop_name }}</span>
-            </div>
-          </el-dropdown-item>
-          <el-dropdown-item class="dropdown-item">
-            <p>账号：{{ adminInfo.phone }}</p>
-          </el-dropdown-item>
-          <el-dropdown-item v-if="adminInfo.role_type!=1" class="dropdown-item">
-            有效期：<span style="color: #f4516c">[{{ adminInfo.system_end_time }}]</span>
+            <p>账号：{{ adminInfo.username }}</p>
           </el-dropdown-item>
           <el-dropdown-item divided style="text-align:center" @click.native="showChange = true">
             修改密码

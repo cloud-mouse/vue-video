@@ -25,7 +25,7 @@ const deleteOne = async (req, res, next) => {
 const updateOne = async (req, res, next) => {
   let body = req.body
   try {
-    let result = await Role.findByIdAndUpdate(req.query.id, body)
+    let result = await Role.findByIdAndUpdate(body._id, body)
     if (!result) return res.send({ code: 422, msg: '未找到条目' })
     res.send({ code: 200, msg: '修改成功', data: result })
   } catch (error) {

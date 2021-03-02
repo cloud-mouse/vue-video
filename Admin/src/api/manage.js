@@ -27,7 +27,7 @@ export const rolesApi = {
   editRole(data) {
     return request({
       url: '/admin-api/role',
-      method: 'put',
+      method: 'patch',
       data
     })
   },
@@ -58,11 +58,11 @@ export const rolesApi = {
    * 删除角色
    * @param {_id} data
    */
-  delRole(data) {
+  delRole(params) {
     return request({
-      url: '/admin-api/delRole',
-      method: 'post',
-      data
+      url: '/admin-api/role',
+      method: 'delete',
+      params
     })
   }
 
@@ -109,11 +109,10 @@ export const adminApi = {
   editAdmin(data) {
     return request({
       url: '/admin-api/admin',
-      method: 'put',
+      method: 'patch',
       data
     })
   }
-
 }
 
 export const permissionApi = {

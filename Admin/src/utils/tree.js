@@ -20,7 +20,7 @@ function listToTreeMulti(list, root = '0', pk = 'id', pid = 'pid', child = 'chil
         if (other !== null) {
           item = objectMerge(item, other)
         }
-        const children = listToTreeMulti(list, item[pk], pk, pid, child, other)
+        const children = listToTreeMulti(item, item[pk], pk, pid, child, other)
         if (children.length) {
           item[child] = children
         }

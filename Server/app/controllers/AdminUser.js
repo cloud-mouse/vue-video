@@ -1,7 +1,21 @@
 const AdminUser = require('../models/AdminUser')
+const Permission = require('../models/Permission')
+
 const bcrypt = require('bcryptjs')
 const { JWT_SECRET } = require('../../config')
 const jwt = require('jsonwebtoken')
+
+
+const getPermission_name = async(itemArr, p_name, p_arr)=>{
+  itemArr.map(async(child)=>{
+    if(p_arr.indexOf(`${child._id}`)> -1) {
+      p_name.push(child.name)
+    }
+    if(child.children){
+      await getPermission_name(child.children, p_name, p_arr)
+    }
+  })
+}
 
 module.exports = {
   // admin用户注册
@@ -44,14 +58,14 @@ module.exports = {
   // 获取管路员列表
   async getList(req, res, next) {
     let { currentPage, pageSize, id } = req.query
-    let user
+    let user,count = 0
     if (id) {
       user = await AdminUser.findById({ _id: id }).populate('role')
       if (!user) return res.send({ code: 422, msg: '用户信息不存在' })
       res.send({ code: 200, msg: '获取成功', data: user })
     } else {
       user = await AdminUser.find().skip((currentPage - 1) * pageSize).sort({sort:-1}).limit(pageSize * 1).lean().populate('role')
-      const count = await AdminUser.countDocuments()  // 计数
+      count = await AdminUser.countDocuments()  // 计数
       if (!user) return res.send({ code: 422, msg: '获取失败' })
       res.send({ code: 200, msg: '获取成功', data: {list:user, count: count} })
     }
@@ -67,11 +81,29 @@ module.exports = {
       res.send({ code: 422, msg: '请选择用户' })
     }
   },
+  async updateOne(req, res, next) {
+    let body = req.body
+    try {
+      let result = await AdminUser.findByIdAndUpdate(body._id, body)
+      if (!result) return res.send({ code: 422, msg: '未找到用户' })
+      res.send({ code: 200, msg: '修改成功', data: result })
+    } catch (error) {
+      res.send({ code: 422, msg: error })
+    }
+  },
   // 获取用户信息
   async userInfo(req, res, next) {
     const user_id = req.user_id
-    const user = await AdminUser.findById({ _id: user_id }).populate('role')
+    const user = await AdminUser.findById({ _id: user_id }).populate('role').lean()
+
+    const permissionList = await Permission.find()
+    var role_permission = user.role.permission.split(',')
+    var p_name = []
+    await getPermission_name(permissionList, p_name, role_permission)
+    user.permission_name = p_name
+
     if (!user) return res.send({ code: 422, msg: '用户信息不存在' })
     res.send({ code: 200, msg: '获取成功', data: user })
-  }
+  },
+  
 }

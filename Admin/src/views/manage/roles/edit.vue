@@ -5,19 +5,22 @@
     </div>
     <div class="form-info">
       <el-form ref="form" :model="form" :rules="rules" label-width="80px" label-position="top" size="small">
-        <el-form-item label="角色名称" prop="admin_role_name">
-          <el-input v-model="form.admin_role_name" style="width: 30%" />
+        <el-form-item label="角色名称" prop="role_name">
+          <el-input v-model="form.role_name" style="width: 30%" />
         </el-form-item>
         <el-form-item label="角色权限">
           <!-- <el-input v-model="form.name" style="width: 30%" /> -->
           <div v-loading="loading" class="permission-tree">
             <el-tree
               ref="tree"
-              :data="getRulesList"
+              :data="authorityList"
               :props="defaultProps"
               default-expand-all
               show-checkbox
               node-key="_id"
+              :expand-on-click-node="false"
+              :render-content="renderContent"
+              @node-expand="handleNodeExpand"
               @check="checkHandle"
             />
           </div>
@@ -33,8 +36,8 @@
 
 <script>
 import CardTag from '@/components/CardTag'
-import { rolesApi } from '@/api/manage'
-import tree from '@/utils/tree'
+import { permissionApi, rolesApi } from '@/api/manage'
+// import tree from '@/utils/tree'
 export default {
   components: {
     CardTag
@@ -43,24 +46,25 @@ export default {
     return {
       id: '',
       loading: false,
+      expand_all: false,
       authorityList: [],
       form: {
-        admin_role_name: '',
-        authority_list: []
+        role_name: '',
+        permission: []
       },
       rules: {
-        admin_role_name: [{ required: true, message: '请输入角色名称', trigger: 'blur' }]
+        role_name: [{ required: true, message: '请输入角色名称', trigger: 'blur' }]
       },
       defaultProps: {
         children: 'children',
-        label: 'name'
+        label: 'title'
       }
     }
   },
   computed: {
-    getRulesList() {
-      return tree.listToTreeMulti(this.authorityList)
-    }
+    // getRulesList() {
+    //   return tree.listToTreeMulti(this.authorityList)
+    // }
   },
   created() {
     this.getPermission()
@@ -69,30 +73,60 @@ export default {
       this.getRoleInfo(this.$route.query.id)
     }
   },
+  mounted() {
+  },
   methods: {
     // 获取权限列表
-    async getPermission() {
-      await rolesApi.authorityList().then(res => {
-        this.authorityList = res.data
+    getPermission() {
+      permissionApi.getList().then(res => {
+        this.authorityList = res.data.list
       })
     },
     loadNode(node, resolve) {
-      console.log(node)
       resolve()
     },
+    renderContent(h, { node, data, store }) {
+      let classname = ''
+      if (node.childNodes.length === 0) {
+        classname = 'floatRight'
+      } else if (node.childNodes.length > 0) {
+        classname = 'clearFloat'
+      }
+      return <span class={classname}>{node.label}</span>
+    },
+    handleNodeExpand() {
+      this.changeCss()
+    },
+    changeCss() {
+      this.$nextTick(() => {
+        var levelName = document.getElementsByClassName('floatRight')
+        for (var i = 0; i < levelName.length; i++) {
+          const parentNode = levelName[i].parentNode
+          parentNode.style.cssFloat = 'left'
+          parentNode.style.styleFloat = 'left'
+        }
+        var clearFloat = document.getElementsByClassName('clearFloat')
+        for (var j = 0; j < clearFloat.length; j++) {
+          const parentNode = clearFloat[j].parentNode
+          parentNode.style.clear = 'both'
+          parentNode.style.clear = 'both'
+        }
+      })
+    },
     // 获取角色详情
-    async getRoleInfo(id) {
+    getRoleInfo(id) {
       const _this = this
       this.loading = true
-      await rolesApi.roleDetail({
-        admin_role_id: id
+      rolesApi.roleDetail({
+        id: id
       }).then(res => {
-        this.form.admin_role_id = res.data.admin_role_id
-        this.form.admin_role_name = res.data.admin_role_name
-        this.form.authority_list = res.data.authority_list.join(',')
-        console.log(res.data.authority_list)
+        this.form._id = res.data._id
+        this.form.role_name = res.data.role_name
+        this.form.permission = res.data.permission
+        let permissionArr = []
+        permissionArr = res.data.permission.split(',')
         setTimeout(() => {
-          res.data.authority_list.forEach(value => {
+          permissionArr.forEach(value => {
             _this.$refs.tree.setChecked(value, true, false)
           })
           _this.loading = false
@@ -101,17 +135,16 @@ export default {
     },
     // 提交check
     checkHandle(data) {
-      console.log(data)
       const halfCheckedKeys = this.$refs.tree.getHalfCheckedKeys().join(',')
       const checkedKeys = this.$refs.tree.getCheckedKeys().join(',')
       if (halfCheckedKeys.length && checkedKeys.length) {
-        this.form.authority_list = halfCheckedKeys + ',' + checkedKeys
+        this.form.permission = halfCheckedKeys + ',' + checkedKeys
       } else if (halfCheckedKeys.length && checkedKeys.length === 0) {
-        this.form.authority_list = halfCheckedKeys
+        this.form.permission = halfCheckedKeys
       } else if (halfCheckedKeys.length === 0 && checkedKeys.length) {
-        this.form.authority_list = checkedKeys
+        this.form.permission = checkedKeys
       } else {
-        this.form.authority_list = ''
+        this.form.permission = ''
       }
     },
     // 提交按钮
@@ -119,8 +152,8 @@ export default {
       const _this = this
       _this.$refs[formName].validate((valid) => {
         if (valid) {
-          if (_this.form.admin_role_id) {
-            rolesApi.editRole(this.form).then(res => {
+          if (_this.form._id) {
+            rolesApi.editRole(_this.form).then(res => {
               this.$message({
                 type: 'success',
                 message: res.msg
@@ -128,12 +161,12 @@ export default {
               _this.$router.go(-1)
             }).catch(() => {
               this.$message({
-                type: 'info',
-                message: '创建失败'
+                type: 'error',
+                message: '更新失败'
               })
             })
           } else {
-            rolesApi.addRole(this.form).then(res => {
+            rolesApi.addRole(_this.form).then(res => {
               this.$message({
                 type: 'success',
                 message: res.msg

@@ -23,7 +23,9 @@ export default {
   name: 'Page404',
   data() {
     return {
-      firstPage: {}
+      firstPage: {
+        path: '/'
+      }
     }
   },
   computed: {

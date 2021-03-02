@@ -28,14 +28,8 @@
         :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
       >
         <el-table-column
-          prop="name"
+          prop="title"
           label="菜单名称"
-          align="center"
-        />
-        <el-table-column
-          prop="icon"
-          label="菜单图标"
-          width="180"
           align="center"
         />
         <el-table-column
@@ -44,15 +38,10 @@
           align="center"
         />
         <el-table-column
-          prop="component"
-          label="路由组件"
+          prop="name"
+          label="路由名称"
           align="center"
         />
-        <el-table-column label="是否隐藏" align="center">
-          <template slot-scope="scope">
-            <span>{{ scope.row.hidden==='1'?'隐藏':'显示' }}</span>
-          </template>
-        </el-table-column>
         <el-table-column
           prop="createTime"
           label="创建时间"
@@ -120,12 +109,12 @@
         ref="form"
         :model="form"
         :rules="rules"
-        label-width="100px"
+        label-width="130px"
         label-position="rigth"
         size="small"
       >
-        <el-form-item label="父级菜单" prop="pid">
-          <el-select
+        <el-form-item label="父级菜单(pid)" prop="pid">
+          <!-- <el-select
             v-model="form.pid"
             placeholder="请选择"
             style="width: 100%"
@@ -138,43 +127,30 @@
               :label="item.name"
               :value="item._id"
             />
-          </el-select>
+          </el-select> -->
+
+          <el-cascader
+            v-model="pid"
+            :options="permissionList"
+            :show-all-levels="false"
+            :props="{ value: '_id',label:'title',checkStrictly: true }"
+            clearable
+            :disabled="dialogType == 'detail'"
+            @change="handleChange"
+          />
+          <el-tag type="danger">不选表示顶级</el-tag>
+
         </el-form-item>
-        <el-form-item label="菜单名称" prop="name">
-          <el-input v-model="form.name" :disabled="dialogType == 'detail'" />
+        <el-form-item label="菜单名称(title)" prop="title">
+          <el-input v-model="form.title" :disabled="dialogType == 'detail'" />
         </el-form-item>
-        <el-form-item label="菜单图标">
-          <el-input v-model="form.icon" :disabled="dialogType == 'detail'" />
-        </el-form-item>
-        <el-form-item label="权限路径" prop="path">
+        <el-form-item label="菜单路由(path)" prop="path">
           <el-input v-model="form.path" :disabled="dialogType == 'detail'" />
         </el-form-item>
-        <el-form-item label="权限名" prop="path_name">
-          <el-input v-model="form.path_name" :disabled="dialogType == 'detail'" />
+        <el-form-item label="路由名称(name)" prop="name">
+          <el-input v-model="form.name" :disabled="dialogType == 'detail'" />
         </el-form-item>
-        <el-form-item label="路由组件" prop="component">
-          <el-input v-model="form.component" :disabled="dialogType == 'detail'" />
-        </el-form-item>
-        <el-form-item label="激活菜单">
-          <el-input v-model="form.activeMenu" :disabled="dialogType == 'detail'" />
-        </el-form-item>
-        <el-form-item label="是否隐藏">
-          <el-switch
-            v-model="form.hidden"
-            active-value="1"
-            inactive-value="0"
-            :disabled="dialogType == 'detail'"
-          />
-        </el-form-item>
-        <el-form-item label="总是显示">
-          <el-switch
-            v-model="form.alwaysShow"
-            active-value="1"
-            inactive-value="0"
-            :disabled="dialogType == 'detail'"
-          />
-        </el-form-item>
-        <el-form-item label="路由排序">
+        <el-form-item label="路由排序(sort)">
           <el-input v-model="form.sort" :disabled="dialogType == 'detail'" />
         </el-form-item>
         <el-form-item>
@@ -217,26 +193,21 @@ export default {
       keywords: '',
       permissionList: [],
       dialogFormVisible: false,
+      pid: [],
       form: {
-        pid: 0,
-        name: '',
-        icon: '',
+        pid: '0',
+        title: '',
         path: '',
-        path_name: '',
-        component: '',
-        activeMenu: '',
-        hidden: '1',
-        alwaysShow: '0',
+        name: '',
         sort: '0'
       },
       pageSize: 10,
       currentPage: 1,
       total: 0,
       rules: {
-        name: [{ required: true, message: '请填写路由名称', trigger: 'blur' }],
-        path: [{ required: true, trigger: 'blur', message: '请填写权限路径' }],
-        path_name: [{ required: true, trigger: 'blur', message: '请填写权限名' }],
-        component: [{ required: true, trigger: 'blur', message: '请填写路由组件' }]
+        title: [{ required: true, message: '请填写菜单名称', trigger: 'blur' }],
+        path: [{ required: true, trigger: 'blur', message: '请填写菜单路由' }],
+        name: [{ required: true, trigger: 'blur', message: '请填写路由名称' }]
       },
       dialogType: 'add'
     }
@@ -248,16 +219,12 @@ export default {
         this.$refs.form.clearValidate()
         this.form = {
           pid: 0,
-          name: '',
-          icon: '',
+          title: '',
           path: '',
-          path_name: '',
-          component: '',
-          activeMenu: '',
-          hidden: '1',
-          alwaysShow: '0',
+          name: '',
           sort: '0'
         }
+        this.pid = []
       }
     }
   },
@@ -283,13 +250,19 @@ export default {
       if (form && form._id) {
         // 请求分类详情
         this.form = form
+        this.pid = form.pid
       }
+    },
+    handleChange(e) {
+      console.log(e)
+      this.form.pid = e[e.length - 1]
     },
     onSubmit(formName) {
       const _this = this
       _this.$refs[formName].validate(valid => {
         if (valid) {
           if (_this.form._id) {
+            _this.form.pid ? _this.form.pid : '0'
             permissionApi.updateItem(_this.form).then(res => {
               this.$message.success(res.msg)
               // 重置表单
@@ -302,6 +275,7 @@ export default {
               this.$message.error(err || '编辑失败!')
             })
           } else {
+            _this.form.pid ? _this.form.pid : '0'
             permissionApi.addItem(_this.form).then(res => {
               this.$message.success(res.msg)
               // 重置表单

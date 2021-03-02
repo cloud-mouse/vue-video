@@ -26,12 +26,12 @@
         tooltip-effect="dark"
       >
         <el-table-column
-          prop="admin_role_id"
+          prop="_id"
           label="ID"
           align="center"
         />
         <el-table-column
-          prop="admin_role_name"
+          prop="role_name"
           label="角色名称"
           align="center"
         />
@@ -45,15 +45,23 @@
           </template>
         </el-table-column>
         <el-table-column
-          prop="created_at"
+          prop="createTime"
           label="创建时间"
           align="center"
-        />
+        >
+          <template slot-scope="scope">
+            {{ scope.row.createTime | timeFormat }}
+          </template>
+        </el-table-column>
         <el-table-column
-          prop="updated_at"
-          label="最后更新时间"
+          prop="updateTime"
+          label="更新时间"
           align="center"
-        />
+        >
+          <template slot-scope="scope">
+            {{ scope.row.updateTime | timeFormat }}
+          </template>
+        </el-table-column>
         <el-table-column
           fixed="right"
           label="操作"
@@ -65,7 +73,7 @@
                 size="mini"
               >查看</el-button>
             </router-link> -->
-            <router-link :to="`/manage/roles/edit?id=${scope.row.admin_role_id}`">
+            <router-link :to="`/manage/roles/edit?id=${scope.row._id}`">
               <el-button
                 type="primary"
                 size="mini"
@@ -74,7 +82,7 @@
             <el-button
               size="mini"
               type="danger"
-              @click="handleDelete(scope.row.admin_role_id)"
+              @click="handleDelete(scope.row._id)"
             >删除</el-button>
           </template>
         </el-table-column>
@@ -98,8 +106,12 @@
 
 <script>
 import { rolesApi } from '@/api/manage'
+import { formatTime } from '@/utils'
 export default {
   filters: {
+    timeFormat(time) {
+      return formatTime(new Date(time))
+    },
     statusFilter(status) {
       const statusMap = {
         1: 'success',
@@ -126,7 +138,7 @@ export default {
         currentPage: this.currentPage,
         pageSize: this.pageSize
       }).then(res => {
-        this.rolesList = res.data.data
+        this.rolesList = res.data.list
         this.total = res.data.count
       })
     },
@@ -150,7 +162,7 @@ export default {
         confirmButtonClass: 'danger',
         center: true
       }).then(() => {
-        rolesApi.delRole({ admin_role_id: id }).then(res => {
+        rolesApi.delRole({ id: id }).then(res => {
           this.$message({
             type: 'success',
             message: '删除成功!'

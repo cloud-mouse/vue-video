@@ -36,7 +36,6 @@ const actions = {
     return new Promise((resolve, reject) => {
       login({ username: username.trim(), password: password }).then(response => {
         const { data } = response
-        console.log(data)
         commit('SET_STATUS', data)
         setToken(data.token)
         setAdminId(data.user_id)
@@ -55,9 +54,9 @@ const actions = {
         if (!data) {
           reject('验证失败，请重新登录')
         }
-        const { permission } = data
+        const { permission_name } = data
         commit('SET_ADMIN_INFO', data)
-        commit('SET_ADMIN_PERMISSION', permission || '')
+        commit('SET_ADMIN_PERMISSION', permission_name || '')
         resolve(data)
       }).catch(error => {
         reject(error)

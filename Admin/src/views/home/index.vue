@@ -50,7 +50,7 @@ export default {
     }
   },
   created() {
-    this.getData()
+    // this.getData()
   },
   methods: {
     getData() {

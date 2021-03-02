@@ -31,32 +31,49 @@
           type="index"
         />
         <el-table-column
-          label="管理员信息"
+          label="管理员账号"
           align="center"
         >
           <template slot-scope="scope">
-            <span>{{ scope.row.name }}/{{ scope.row.phone }}</span>
+            <span>{{ scope.row.username }}</span>
           </template>
         </el-table-column>
         <el-table-column
-          prop="role_name"
           label="管理员角色"
           align="center"
-        />
-        <!-- <el-table-column
+        >
+          <template slot-scope="scope">
+            <span v-if="scope.row.role">{{ scope.row.role.role_name }}</span>
+            <span v-else>未设置</span>
+          </template>
+        </el-table-column>
+        <el-table-column
           label="管理员状态"
           align="center"
           width="250"
         >
           <template slot-scope="scope">
-            <el-tag :type="scope.row.del | statusFilter">{{ scope.row.del==0?'已打烊':'营业中' }}</el-tag>
+            <el-tag :type="scope.row.status | statusFilter">{{ scope.row.status==0?'禁用':'启用' }}</el-tag>
           </template>
-        </el-table-column> -->
+        </el-table-column>
         <el-table-column
-          prop="created_at"
+          prop="createTime"
           label="创建时间"
           align="center"
-        />
+        >
+          <template slot-scope="scope">
+            {{ scope.row.createTime | timeFormat }}
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="updateTime"
+          label="更新时间"
+          align="center"
+        >
+          <template slot-scope="scope">
+            {{ scope.row.updateTime | timeFormat }}
+          </template>
+        </el-table-column>
         <el-table-column
           fixed="right"
           label="操作"
@@ -74,7 +91,7 @@
             <el-button
               size="mini"
               type="danger"
-              @click="handleDelete(scope.row.id)"
+              @click="handleDelete(scope.row._id)"
             >删除</el-button>
           </template>
         </el-table-column>
@@ -95,8 +112,8 @@
     <!-- 管理员新增，详情，编辑弹框 -->
     <el-dialog v-dialogDrag center :title="dialogType=='add'? '新增管理员': dialogType=='edit'? '编辑管理员': '管理员详情'" :visible.sync="dialogFormVisible">
       <el-form ref="form" :model="form" :rules="rules" label-width="100px" label-position="rigth" size="small">
-        <el-form-item label="管理员姓名" prop="name">
-          <el-input v-model="form.name " :disabled="dialogType=='detail'" />
+        <el-form-item label="登录账号" prop="username">
+          <el-input v-model="form.username " :disabled="dialogType=='detail'" />
         </el-form-item>
         <el-form-item label="手机号" prop="phone">
           <el-input v-model="form.phone " :disabled="dialogType=='detail'" />
@@ -104,13 +121,20 @@
         <el-form-item v-if="dialogType!=='detail'" label="密码">
           <el-input v-model="form.password " type="password" :disabled="dialogType=='detail'" />
         </el-form-item>
-        <el-form-item label="管理员角色" prop="role_id">
-          <el-select v-model="form.role_id" placeholder="请选择" style="width: 100%" :disabled="dialogType=='detail'">
+        <el-form-item label="管理员角色" prop="role">
+          <el-select
+            v-model="selectRole"
+            value-key="_id"
+            placeholder="请选择"
+            style="width: 100%"
+            :disabled="dialogType=='detail'"
+            @change="roleSelect"
+          >
             <el-option
               v-for="item in rolesList"
-              :key="item.admin_role_id"
-              :label="item.admin_role_name"
-              :value="item.admin_role_id"
+              :key="item._id"
+              :label="item.role_name"
+              :value="item"
             />
           </el-select>
         </el-form-item>
@@ -127,8 +151,12 @@
 <script>
 import { adminApi, rolesApi } from '@/api/manage'
 import { validPhone } from '@/utils/validate'
+import { formatTime } from '@/utils'
 export default {
   filters: {
+    timeFormat(time) {
+      return formatTime(new Date(time))
+    },
     statusFilter(status) {
       const statusMap = {
         1: 'success',
@@ -151,23 +179,28 @@ export default {
       adminList: [],
       dialogFormVisible: false,
       form: {
-        name: '',
+        username: '',
         phone: '',
         password: '',
-        role_id: ''
+        avatar: '',
+        role: ''
       },
+      selectRole: {},
       pageSize: 10,
       currentPage: 1,
       total: 0,
       rolesList: [],
       rules: {
-        name: [
+        username: [
           { required: true, message: '请填写管理员姓名', trigger: 'blur' }
+        ],
+        password: [
+          { required: true, message: '请填写管理员密码', trigger: 'blur' }
         ],
         phone: [
           { required: true, trigger: 'blur', validator: validatePhone }
         ],
-        role_id: [
+        role: [
           { required: true, message: '请选择角色', trigger: 'change' }
         ]
       },
@@ -180,10 +213,10 @@ export default {
         this.$refs.form.resetFields()
         this.$refs.form.clearValidate()
         this.form = {
-          name: '',
-          phone: '',
+          username: '',
           password: '',
-          role_id: ''
+          avatar: '',
+          role: ''
         }
       }
     }
@@ -204,32 +237,32 @@ export default {
       })
     },
     getRoleList() {
-      rolesApi.roleList().then(res => {
-        this.rolesList = res.data.data
+      rolesApi.roleList({
+        currentPage: 1,
+        pageSize: 1000
+      }).then(res => {
+        this.rolesList = res.data.list
       })
     },
     showDialog(type, form) {
       this.dialogType = type
       this.dialogFormVisible = true
-      if (form && form.id) {
+      if (form && form._id) {
         // 请求分类详情
-        this.form.id = form.id
-        this.form.name = form.name
-        this.form.password = form.password
-        this.form.role_id = form.role_id
-        this.form.phone = form.phone
+        this.form = form
+        this.selectRole = form.role
       }
+    },
+    roleSelect(e) {
+      this.form.role = e._id
     },
     onSubmit(formName) {
       const _this = this
       _this.$refs[formName].validate((valid) => {
         if (valid) {
-          if (_this.form.id) {
-            if (_this.form.password === '') {
-              delete _this.form.password
-            }
+          if (_this.form._id) {
             adminApi.editAdmin(_this.form).then(res => {
-              if (res.code === 0) {
+              if (res.code === 200) {
                 this.$message({
                   type: 'success',
                   message: res.msg || '修改成功!'
@@ -241,12 +274,12 @@ export default {
                 this.dialogFormVisible = false
                 this.fetchData()
               } else {
-                this.$message.success(res.msg || '修改失败!')
+                this.$message.error(res.msg || '修改失败!')
               }
             })
           } else {
             adminApi.addAdmin(_this.form).then(res => {
-              if (res.code === 0) {
+              if (res.code === 200) {
                 this.$message({
                   type: 'success',
                   message: res.msg || '添加成功!'
@@ -258,7 +291,7 @@ export default {
                 this.dialogFormVisible = false
                 this.fetchData()
               } else {
-                this.$message.success(res.msg || '添加失败!')
+                this.$message.error(res.msg || '添加失败!')
               }
             })
           }

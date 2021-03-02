@@ -39,8 +39,13 @@ export default {
   }
   .el-tree-node__children{
     .el-tree-node__content {
-      float:left;
       width:228px;
+      .floatRight{
+        float: right
+      }
+      .floatLeft{
+        float: left
+      }
     }
   }
 }

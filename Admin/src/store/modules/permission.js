@@ -13,22 +13,16 @@ const permission = {
     }
   },
   actions: {
-    GenerateRoutes({ commit }, data) {
+    GenerateRoutes({ commit, state }, data) {
       return new Promise((resolve, reject) => {
         const userPermission = data
         let accessedRouters = []
+        // 先拿到全部的路由
         // 根据角色权限，动态生成新路由
         // 返回一级
         accessedRouters = asyncRouter.filter(item => {
-          return userPermission.indexOf(item.id) > -1
-        })
-        // 返回二级路由
-        accessedRouters.map((item) => {
-          if (item.children) {
-            item.children = item.children.filter(child => {
-              return userPermission.indexOf(child.id) > -1
-            })
-          }
+          getChildren(item, userPermission)
+          return userPermission.indexOf(item.name) > -1
         })
         // accessedRouters = asyncRouter
         accessedRouters.push({ path: '*', redirect: '/404', hidden: true })
@@ -37,8 +31,17 @@ const permission = {
         resolve()
       })
     }
-  }
 
+  }
+}
+
+const getChildren = (item, userPermission) => {
+  if (item.children) {
+    item.children = item.children.filter(child => {
+      getChildren(child, userPermission)
+      return userPermission.indexOf(child.name) > -1
+    })
+  }
 }
 
 export default permission
