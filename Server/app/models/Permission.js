@@ -44,7 +44,8 @@ const PermissionSchema = new mongoose.Schema({
   },
   // 排序
   sort: {
-    type: String
+    type: String,
+    default: '0'
   },
   // 创建时间
   createTime: {

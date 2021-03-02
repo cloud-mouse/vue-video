@@ -4,7 +4,7 @@ export const rolesApi = {
   // 路由表
   authorityList(params) {
     return request({
-      url: '/authority/authorityList',
+      url: '/admin-api/permission',
       method: 'get',
       params
     })
@@ -15,11 +15,8 @@ export const rolesApi = {
    */
   addRole(data) {
     return request({
-      url: '/authority/addRole',
+      url: '/admin-api/role',
       method: 'post',
-      headers: {
-        'Content-Type': 'application/json;charset=UTF-8'
-      },
       data
     })
   },
@@ -29,44 +26,41 @@ export const rolesApi = {
    */
   editRole(data) {
     return request({
-      url: '/authority/editRole',
-      method: 'post',
-      headers: {
-        'Content-Type': 'application/json;charset=UTF-8'
-      },
+      url: '/admin-api/role',
+      method: 'put',
       data
     })
   },
 
   /**
    * 角色列表
-   * @param {} data
+   * @param {} params
    */
   roleList(params) {
     return request({
-      url: '/authority/roleList',
+      url: '/admin-api/role',
       method: 'get',
       params
     })
   },
   /**
    * 角色详情
-   * @param {admin_role_id} data
+   * @param {_id} params
    */
   roleDetail(params) {
     return request({
-      url: '/authority/roleDetail',
+      url: '/admin-api/role',
       method: 'get',
       params
     })
   },
   /**
    * 删除角色
-   * @param {admin_role_id} data
+   * @param {_id} data
    */
   delRole(data) {
     return request({
-      url: '/authority/delRole',
+      url: '/admin-api/delRole',
       method: 'post',
       data
     })
@@ -79,7 +73,7 @@ export const adminApi = {
   // 获取管理员列表
   getAdminList(params) {
     return request({
-      url: '/authority/adminList',
+      url: '/admin-api/admin',
       method: 'get',
       params
     })
@@ -91,7 +85,7 @@ export const adminApi = {
    */
   addAdmin(data) {
     return request({
-      url: '/authority/addAdmin',
+      url: '/admin-api/admin',
       method: 'post',
       data
     })
@@ -102,7 +96,7 @@ export const adminApi = {
    */
   delAdmin(params) {
     return request({
-      url: '/authority/delAdmin',
+      url: '/admin-api/admin',
       method: 'get',
       params
     })
@@ -114,10 +108,45 @@ export const adminApi = {
    */
   editAdmin(data) {
     return request({
-      url: '/authority/editAdmin',
-      method: 'post',
+      url: '/admin-api/admin',
+      method: 'put',
       data
     })
   }
 
+}
+
+export const permissionApi = {
+  // 获取管理员列表
+  getList(params) {
+    return request({
+      url: '/admin-api/permission',
+      method: 'get',
+      params
+    })
+  },
+  // 新增
+  addItem(data) {
+    return request({
+      url: '/admin-api/permission',
+      method: 'post',
+      data
+    })
+  },
+  // 修改
+  updateItem(data) {
+    return request({
+      url: '/admin-api/permission',
+      method: 'patch',
+      data
+    })
+  },
+  // 删除
+  deleteItem(params) {
+    return request({
+      url: '/admin-api/permission',
+      method: 'delete',
+      params
+    })
+  }
 }

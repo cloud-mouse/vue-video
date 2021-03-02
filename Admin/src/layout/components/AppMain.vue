@@ -47,11 +47,9 @@ export default {
     position: relative;
     box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
     border-radius: 5px;
-    .operation{
-      position: absolute;
-      right: 10px;
-      top: 10px;
-    }
+    display: flex;
+    justify-content: space-between;
+
   }
   .content{
     border: 1px solid #f5f5f5;

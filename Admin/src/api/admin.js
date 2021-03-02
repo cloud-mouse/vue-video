@@ -2,7 +2,7 @@ import request from '@/utils/request'
 
 export function login(data) {
   return request({
-    url: '/admin-api/user/login',
+    url: '/admin-api/admin/login',
     method: 'post',
     data
   })
@@ -10,7 +10,7 @@ export function login(data) {
 
 export function getInfo(params) {
   return request({
-    url: '/admin-api/user/info',
+    url: '/admin-api/admin/info',
     method: 'get',
     params
   })
@@ -18,14 +18,14 @@ export function getInfo(params) {
 
 export function logout() {
   return request({
-    url: '/admin-api/user/logOut',
+    url: '/admin-api/admin/logOut',
     method: 'post'
   })
 }
 
 export function checkLogin() {
   return request({
-    url: '/admin-api/user/checkLogin',
+    url: '/admin-api/admin/checkLogin',
     method: 'get'
   })
 }
@@ -33,7 +33,7 @@ export function checkLogin() {
 // 获取验证码
 export function getCaptcha(params) {
   return request({
-    url: '/admin-api/user/getCaptcha',
+    url: '/admin-api/admin/getCaptcha',
     method: 'get',
     params
   })
@@ -42,7 +42,7 @@ export function getCaptcha(params) {
 // 修改密码
 export function changePsd(data) {
   return request({
-    url: '/admin-api/user/changePsd',
+    url: '/admin-api/admin/changePsd',
     method: 'post',
     data
   })

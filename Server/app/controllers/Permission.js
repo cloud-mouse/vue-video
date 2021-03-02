@@ -14,7 +14,7 @@ const create = async (req, res, next) => {
 const updateOne = async(req, res, next) =>{
   let body = req.body
   try {
-    const result = await Permission.findByIdAndUpdate(req.query.id, body)
+    const result = await Permission.findByIdAndUpdate(body._id, body)
     if (!result) return res.send({ code: 422, msg: result })
     res.send({ code: 200, msg: '修改成功', data: result })
   } catch (error) {
@@ -23,12 +23,14 @@ const updateOne = async(req, res, next) =>{
 }
 // 获取列表
 const getList = async (req, res, next) => {
-  let permission = await Permission.find({ pid: '0' }).lean() // 查询顶级
+  let { currentPage, pageSize } = req.query
+  let permission = await Permission.find({ pid: '0' }).skip((currentPage - 1) * pageSize).sort({sort:-1}).limit(pageSize * 1).lean() // 查询顶级
+  const count = await Permission.countDocuments({ pid: '0' })  // 计数
+  // 递归获取children
   for(let i=0; i<permission.length; i++) {
     permission[i] = await getChildren(permission[i])
   }
-  console.log('permission',permission);
-  res.send({ code: 200, msg: '获取成功', data: permission })
+  res.send({ code: 200, msg: '获取成功', data: {list: permission, count: count } })
 }
 // 递归查询children
 const getChildren = async (item) => {
@@ -45,13 +47,19 @@ const getChildren = async (item) => {
 // 删除
 const deletePermission = async (req, res, next) => {
   let { id } = req.query
-  if (id) {
-    result = await Permission.findByIdAndDelete({ _id: id })
-    if (!result) return res.send({ code: 422, msg: result })
-    res.send({ code: 200, msg: '删除成功', data: result })
-  } else {
-    res.send({ code: 422, msg: '请选择' })
+  try {
+    if (id) {
+      result = await Permission.findByIdAndDelete({ _id: id })
+      await Permission.findOneAndUpdate({ pid: id }, {pid: '0'})
+      if (!result) return res.send({ code: 422, msg: result })
+      res.send({ code: 200, msg: '删除成功', data: result })
+    } else {
+      res.send({ code: 422, msg: '请选择' })
+    } 
+  } catch (error) {
+    res.send({ code: 500, msg: error })
   }
+  
 }
 
 module.exports = {

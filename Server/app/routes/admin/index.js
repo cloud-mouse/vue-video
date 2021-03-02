@@ -4,7 +4,7 @@ const User = require('./user')
 const Role = require('./role')
 const Permission = require('./permission')
 
-router.use('/user', User)
+router.use('/admin', User)
 router.use('/role', Role)
 router.use('/permission', Permission)
 

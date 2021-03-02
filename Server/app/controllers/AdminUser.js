@@ -41,17 +41,20 @@ module.exports = {
     const token = jwt.sign({ id: String(user._id) }, JWT_SECRET)
     res.send({ code: 200, msg: '登录成功', data: { user_id: user._id, token } })
   },
+  // 获取管路员列表
   async getList(req, res, next) {
-    let { id } = req.query
+    let { currentPage, pageSize, id } = req.query
     let user
     if (id) {
       user = await AdminUser.findById({ _id: id }).populate('role')
       if (!user) return res.send({ code: 422, msg: '用户信息不存在' })
+      res.send({ code: 200, msg: '获取成功', data: user })
     } else {
-      user = await AdminUser.find().populate('role')
+      user = await AdminUser.find().skip((currentPage - 1) * pageSize).sort({sort:-1}).limit(pageSize * 1).lean().populate('role')
+      const count = await AdminUser.countDocuments()  // 计数
       if (!user) return res.send({ code: 422, msg: '获取失败' })
+      res.send({ code: 200, msg: '获取成功', data: {list:user, count: count} })
     }
-    res.send({ code: 200, msg: '获取成功', data: user })
   },
   // 删除用户
   async deleteUser(req, res, next) {

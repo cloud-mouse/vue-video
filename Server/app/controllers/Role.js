@@ -14,7 +14,7 @@ const create = async (req, res, next) => {
 // 删除
 const deleteOne = async (req, res, next) => {
   try {
-    let result = Role.findByIdAndDelete(req.query.id)
+    let result = await Role.findByIdAndDelete(req.query.id)
     if (!result) return res.send({ code: 422, msg: '未找到删除条目' })
     res.send({ code: 200, msg: '删除成功', data: result })
   } catch (error) {
@@ -25,7 +25,7 @@ const deleteOne = async (req, res, next) => {
 const updateOne = async (req, res, next) => {
   let body = req.body
   try {
-    let result = Role.findByIdAndUpdate(req.query.id, body)
+    let result = await Role.findByIdAndUpdate(req.query.id, body)
     if (!result) return res.send({ code: 422, msg: '未找到条目' })
     res.send({ code: 200, msg: '修改成功', data: result })
   } catch (error) {
@@ -33,22 +33,23 @@ const updateOne = async (req, res, next) => {
   }
 }
 
-// 查询列表
+// 查询角色列表
 const getList = async (req, res, next) => {
-  let { id } = req.query
-  let result
+  let { currentPage, pageSize, id } = req.query
+  let result,count = 0
   try {
     if (!id) {
-      result = Role.find()
-      console.log('findALL', result);
+      result = await Role.find().skip((currentPage - 1) * pageSize).sort({sort:-1}).limit(pageSize * 1).lean() // 查询顶级
+      count = await Role.countDocuments()  // 计数
+      res.send({ code: 200, data: {list: result, count: count }, msg: '获取成功' })
     } else {
-      result = Role.findById(id)
-      console.log('findOne',result);
+      result = await Role.findById(id)
       if (!result) return res.send({ code: 422, msg: '获取失败' })
       result.permission = result.permission.split(',')
+      res.send({ code: 200, data: result, msg: '获取成功' })
     }
-    res.send({ code: 200, data: result, msg: '获取成功' })
   } catch (error) {
+    console.log(error);
     res.send({ code: 422, msg: error })
   }
 }

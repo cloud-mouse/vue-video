@@ -30,7 +30,7 @@ service.interceptors.request.use(
         config.data = qs.stringify(config.data)
         config.headers['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8'
       }
-    } else if (config.method === 'get') {
+    } else if (config.method === 'get' || config.method === 'delete') {
       const newParams = {}
       for (const key in config.params) {
         // newParams[key] = encodeURIComponent(config.params[key])

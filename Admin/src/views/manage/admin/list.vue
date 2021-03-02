@@ -199,7 +199,7 @@ export default {
         pageSize: this.pageSize,
         currentPage: this.currentPage
       }).then(res => {
-        this.adminList = res.data.data
+        this.adminList = res.data.list
         this.total = res.data.count
       })
     },

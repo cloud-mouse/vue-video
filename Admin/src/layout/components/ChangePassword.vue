@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import { changePsd } from '@/api/user'
+import { changePsd } from '@/api/admin'
 export default {
   name: '',
   props: {
