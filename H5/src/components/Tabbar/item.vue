@@ -1,11 +1,11 @@
 <template>
   <div class="itemWarp flex_mid" @click="changePage">
-    <span v-show="!bol">
+    <!-- <span v-show="!bol">
       <slot name="normalImg" />
     </span>
     <span v-show="bol">
       <slot name="activeImg" />
-    </span>
+    </span> -->
     <span :class="{active: bol==true}" v-text="txt" />
   </div>
 </template>
@@ -47,19 +47,25 @@ export default {
   }
 }
 </script>
-<style type="text/css">
+<style type="text/css" lang="scss">
 .itemWarp {
   flex-grow: 1;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
-}
-.itemWarp span {
-  font-size: 12px;
-  color: #B1B8C8;
-}
-.itemWarp span.active {
-  color: #ee0a24;
+  span {
+    font-size: 14px;
+    font-weight: bold;
+    padding: 10px;
+    color: #333;
+    &:hover{
+      background: #f5f5f5;
+      border-radius: 6px;
+    }
+    &.active{
+      color: rgb(51, 94, 234);
+    }
+  }
 }
 </style>

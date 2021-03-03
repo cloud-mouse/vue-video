@@ -1,6 +1,6 @@
 import defaultSettings from '@/settings'
 
-const title = defaultSettings.title || '影视大全'
+const title = defaultSettings.title || '越看越想看'
 
 export default function getPageTitle(pageTitle) {
   if (pageTitle) {

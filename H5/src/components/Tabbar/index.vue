@@ -83,6 +83,7 @@ export default {
   align-items: center;
   justify-content: space-around;
   font-size: 0;
+  padding: 10px 0;
 }
 .warp img {
   width: 24px;
@@ -96,7 +97,6 @@ export default {
   bottom: 0;
   left: 0;
   width: 100%;
-  padding-bottom: 5px;
   background: #fff;
 }
 </style>

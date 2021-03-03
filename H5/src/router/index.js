@@ -21,6 +21,23 @@ const constantRoutes = [
     meta: { title: '分类', showTabbar: true }
   },
   {
+    path: '/movie',
+    name: 'Movie',
+    component: () => import('@/views/movie/index'),
+    meta: { title: '影视', showTabbar: true },
+    children: [{
+      path: 'list',
+      name: 'MovieList',
+      component: () => import('@/views/movie/list'),
+      meta: { title: '影视列表' }
+    }, {
+      path: 'detail',
+      name: 'MovieDetail',
+      component: () => import('@/views/movie/detail'),
+      meta: { title: '影视详情' }
+    }]
+  },
+  {
     path: '/404',
     component: () => import('@/views/404'),
     hidden: true

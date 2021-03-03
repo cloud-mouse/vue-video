@@ -35,22 +35,15 @@ router.beforeEach(async(to, from, next) => {
         store.dispatch('user/getInfo').then(res => {
           const permission = res.permission_name || [] // 拿到用户可访问的权限
           store.dispatch('GenerateRoutes', permission).then(() => { // 根据roles权限生成可访问的路由表
-            console.log(store.getters.addRouters)
             router.addRoutes(store.getters.addRouters) // 动态添加可访问路由表
             if (from.path !== '/login') {
               next({ ...to, replace: true }) // hack方法 确保addRoutes已完成
             } else {
-              console.log(router)
               next({ path: store.getters.addRouters[0].path, replace: true }) // hack方法 确保addRoutes已完成
             }
           })
         }).catch((err) => {
           console.log(err)
-          // store.dispatch('user/logout').then(() => {
-          //   store.dispatch('user/resetToken')
-          //   // Message.error(err || '验证失败，请重新登陆')
-          //   next({ path: '/' })
-          // })
         })
       }
     }
