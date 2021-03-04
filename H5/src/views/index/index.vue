@@ -13,7 +13,7 @@
     <!-- 轮播 -->
     <div class="index-banner">
       <van-swipe
-        width="351px"
+        width="200px"
         class="my-swipe"
         :autoplay="3000"
         touchable
@@ -32,6 +32,8 @@
       <van-tabs
         v-model="active"
         animated
+        swipeable
+        :border="false"
         color="#335eea"
         title-active-color="#335eea"
         title-inactive-color="#333"
@@ -187,17 +189,17 @@ export default {
   .index-banner {
     padding: 10px 12px;
     .my-swipe {
-      height: 220px;
+      height: 180px;
       border-radius: 12px;
       .van-swipe-item {
         color: #fff;
         font-size: 20px;
         line-height: 10px;
         text-align: center;
-        height: 220px;
+        height: 180px;
         img {
           width: 100%;
-          height: 220px;
+          height: 180px;
           border-radius: 12px;
         }
       }

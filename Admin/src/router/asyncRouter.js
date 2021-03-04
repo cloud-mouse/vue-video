@@ -28,7 +28,26 @@ export const asyncRouter = [
       meta: { title: '会员列表', noCache: false }
     }]
   },
-
+  {
+    path: '/video',
+    name: 'Video',
+    component: Layout,
+    meta: { title: '影视中心', icon: 'video' },
+    children: [
+      {
+        path: 'class',
+        name: 'VideoClass',
+        component: () => import('@/views/video/class/index'),
+        meta: { title: '影视分类' }
+      },
+      {
+        path: 'list',
+        name: 'VideoList',
+        component: () => import('@/views/video/list/index'),
+        meta: { title: '影视列表' }
+      }
+    ]
+  },
   {
     path: '/manage',
     name: 'Manage',

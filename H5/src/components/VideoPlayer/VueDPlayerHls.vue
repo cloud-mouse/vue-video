@@ -24,7 +24,7 @@ export default {
     const player = (this.dp = new DPlayer({
       element: this.$el,
       mutex: false, //  防止同时播放多个用户，在该用户开始播放时暂停其他用户
-      theme: '#b7daff', // 风格颜色，例如播放条，音量条的颜色
+      theme: '#335eea', // 风格颜色，例如播放条，音量条的颜色
       loop: false, // 是否自动循环
       lang: 'zh-cn', // 语言，'en', 'zh-cn', 'zh-tw'
       screenshot: true, // 是否允许截图（按钮），点击可以自动将截图下载到本地
@@ -69,9 +69,10 @@ export default {
   }
 }
 </script>
-<style lang="scss" scoped>
+<style lang="scss">
 .dplayer {
-  max-height: 350px;
-  overflow: hidden;
+  .dplayer-video{
+    min-height: 220px;
+  }
 }
 </style>
