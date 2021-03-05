@@ -97,7 +97,7 @@ module.exports = {
     const user = await AdminUser.findById({ _id: user_id }).populate('role').lean()
 
     const permissionList = await Permission.find()
-    var role_permission = user.role.permission.split(',')
+    var role_permission = user.role? user.role.permission.split(',') : user.role = {permission: []}
     var p_name = []
     await getPermission_name(permissionList, p_name, role_permission)
     user.permission_name = p_name

@@ -2,9 +2,14 @@
   <div class="user-view">
     <div class="top-info">
       <img class="user-avator" :src="avatar" alt="">
-      <div class="accout-info">
+      <div v-if="userInfo.username" class="accout-info">
         <p class="user-name">{{ name }}</p>
-        <p v-if="userInfo.phone " class="user-phone">账号：{{ userInfo.phone }}</p>
+        <p v-if="userInfo.phone" class="user-phone">
+          账号：{{ userInfo.phone }}
+        </p>
+      </div>
+      <div v-else class="accout-info">
+        登录
       </div>
     </div>
     <div class="content-view">
@@ -38,7 +43,7 @@
 
       <div class="cell-box">
         <!-- <cell-item icon-name="site-icon" left-text="地址管理" path="/addressList" /> -->
-        <cell-item icon-name="about" left-text="关于我们" path="/about" />
+        <cell-item left-text="关于我们" path="/about" />
       </div>
     </div>
   </div>
@@ -52,23 +57,15 @@ export default {
     CellItem
   },
   data() {
-    return {
-
-    }
+    return {}
   },
   computed: {
-    ...mapGetters([
-      'name',
-      'avatar',
-      'userInfo'
-    ])
+    ...mapGetters(['name', 'avatar', 'userInfo'])
     // name() {
     //   return this.data
     // }
   },
-  created() {
-
-  },
+  created() {},
   methods: {
     toOrderList(type) {
       if (type) {
@@ -82,73 +79,74 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.user-view{
-  .top-info{
-    background: linear-gradient(to top,#ff6034,#ee0a24);
-    padding: 30px 20px 70px;
-    img.user-avator{
+.user-view {
+  .top-info {
+    background: #fff;
+    padding: 30px 20px;
+    border-bottom: 10px solid #f5f5f5;
+    img.user-avator {
       width: 60px;
       height: 60px;
       display: inline-block;
       vertical-align: middle;
       border-radius: 50%;
+      border: 1px solid #f5f5f5;
     }
-    .accout-info{
+    .accout-info {
       display: inline-block;
       vertical-align: middle;
       font-size: 16px;
       width: 70%;
       padding-left: 20px;
-      p{
+      p {
         margin: 0;
         padding: 5px 0;
         color: #fff;
       }
-      p.user-phone{
+      p.user-phone {
         color: #999;
         font-size: 12px;
       }
     }
   }
-  .content-view{
+  .content-view {
     padding: 10px;
     position: relative;
-    padding-top: 60px;
-    .order-cell{
+    .order-cell {
       padding: 10px 20px;
       border-radius: 10px;
-      box-shadow: 0px 2px 15px #f3f3f3;
+      box-shadow: 0px 2px 15px #887d7d;
       position: absolute;
       width: 95%;
       box-sizing: border-box;
       top: -48px;
       background: #fff;
-      &-title{
+      &-title {
         display: flex;
         align-items: center;
         justify-content: space-between;
         border-bottom: 1px solid #f5f5f5;
         padding: 10px 0;
-        .left-text{
+        .left-text {
           color: #000;
           font-size: 16px;
         }
-        .right-text{
+        .right-text {
           color: #666;
           font-size: 14px;
           text-align: right;
         }
       }
-      .cell-item-box{
+      .cell-item-box {
         display: flex;
         align-items: center;
         justify-content: space-around;
         padding: 10px 0;
-        .cell-item{
+        .cell-item {
           width: 25%;
           text-align: center;
           font-size: 24px;
-          p{
+          p {
             font-size: 12px;
             margin: 5px;
           }
@@ -156,12 +154,11 @@ export default {
       }
     }
   }
-  .cell-box{
+  .cell-box {
     padding: 10px;
     border-radius: 10px;
-    margin-top: 20px;
     background: #fff;
-    .cell-item{
+    .cell-item {
       border: none;
     }
   }

@@ -4,8 +4,118 @@ import Router from 'vue-router'
 Vue.use(Router)
 
 /* Layout */
+import Layout from '@/layout'
 
 export const constantRoutes = [
+  {
+    path: '/',
+    component: Layout,
+    redirect: '/home',
+    name: 'Index',
+    children: [{
+      path: 'home',
+      name: 'Home',
+      component: () => import('@/views/home/index'),
+      meta: { title: '首页', icon: 'home' }
+    }]
+  },
+  {
+    path: '/video',
+    name: 'Video',
+    component: Layout,
+    meta: { title: '影视中心', icon: 'video' },
+    children: [
+      {
+        path: 'class',
+        name: 'VideoClass',
+        component: () => import('@/views/video/class/index'),
+        meta: { title: '影视分类' }
+      },
+      {
+        path: 'list',
+        name: 'VideoList',
+        component: () => import('@/views/video/list/index'),
+        meta: { title: '影视列表' }
+      },
+      {
+        path: 'episodes',
+        name: 'VideoEpisodes',
+        hidden: true,
+        component: () => import('@/views/video/episodes/index'),
+        meta: { title: '影视剧集' }
+      }
+    ]
+  },
+  {
+    path: '/manage',
+    name: 'Manage',
+    component: Layout,
+    redirect: '/manage/admin',
+    meta: { title: '权限管理', icon: 'manage' },
+    children: [
+      {
+        path: 'admin',
+        name: 'Admin',
+        component: () => import('@/views/manage/admin/list'),
+        meta: { title: '管理员' }
+      },
+      {
+        path: 'roles',
+        name: 'Roles',
+        redirect: '/manage/roles/list',
+        component: () => import('@/views/manage/roles/index'),
+        meta: { title: '角色管理' },
+        children: [
+          {
+            path: 'list',
+            name: 'RolesList',
+            hidden: true,
+            component: () => import('@/views/manage/roles/list'),
+            meta: { title: '角色列表', activeMenu: '/manage/roles' }
+          },
+          {
+            path: 'edit:id(\\d+)?',
+            name: 'RolesEdit',
+            hidden: true,
+            component: () => import('@/views/manage/roles/edit'),
+            meta: { title: '角色编辑', activeMenu: '/manage/roles' }
+          },
+          {
+            path: 'detail:id(\\d+)?',
+            name: 'RolesDetail',
+            hidden: true,
+            component: () => import('@/views/manage/roles/detail'),
+            meta: { title: '角色详情', activeMenu: '/manage/roles' }
+          }
+        ]
+      }, {
+        path: 'permission',
+        name: 'Permission',
+        component: () => import('@/views/manage/rules/list'),
+        meta: { title: '权限配置' }
+      }
+    ]
+  },
+  {
+    path: '/system',
+    name: 'System',
+    component: Layout,
+    alwaysShow: true,
+    redirect: '/system/logisticTemplate',
+    meta: { title: ' 系统设置', icon: 'system' },
+    children: [
+      {
+        path: 'adsense',
+        name: 'Adsense',
+        component: () => import('@/views/systemSetup/adsense/index'),
+        meta: { title: '广告位' }
+      }, {
+        path: 'platformSettings',
+        name: 'PlatformSettings',
+        component: () => import('@/views/systemSetup/platformSettings/index'),
+        meta: { title: '平台设置' }
+      }]
+  },
   {
     path: '/login',
     component: () => import('@/views/login/index'),

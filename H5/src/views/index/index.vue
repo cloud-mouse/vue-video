@@ -38,33 +38,35 @@
         title-active-color="#335eea"
         title-inactive-color="#333"
       >
-        <van-tab
-          v-for="item in indexData"
-          :key="item._id"
-          :title="item.name"
-        >
-          <div v-if="item.video && item.video.length" class="video-content">
+        <van-tab v-for="item in indexData" :key="item._id" :title="item.name">
+          <div
+            v-if="item.children && item.children.length"
+            class="video-content"
+          >
             <div
-              v-for="(block, index) in item.video"
+              v-for="(block, index) in item.children"
               :key="index"
               class="block-list"
             >
               <div class="title">{{ block.name }}</div>
               <div class="video-list">
                 <div
-                  v-for="mv in block.list"
+                  v-for="mv in block.movieList"
                   :key="mv.id"
                   class="video-item"
-                  @click="toDetail(mv.id)"
+                  @click="toDetail(mv._id)"
                 >
                   <img :src="mv.cover" alt="">
                   <div class="mv-info">
                     <div class="mv-name">{{ mv.name || '...' }}</div>
                   </div>
-                  <div class="episodes">
+                  <!-- <div class="episodes">
                     {{ mv.isOver === 1 ? '全' : '更新至'
                     }}{{ mv.episodes || 0 }}集
-                  </div>
+                  </div> -->
+                </div>
+                <div v-if="!block.movieList.length" class="no-data">
+                  暂无内容
                 </div>
               </div>
             </div>
@@ -81,7 +83,6 @@
 <script>
 import NoData from '@/components/NoData'
 import { indexApi } from '@/api/home'
-import tree from '@/utils/tree'
 export default {
   components: {
     NoData
@@ -102,16 +103,12 @@ export default {
     // 请求首页数据
     getIndex() {
       indexApi.getIndex().then(res => {
-        this.indexData = tree.listToTreeMulti(res.data.list)
-        let list = res.data.filters(item=>{
-          return item.pid === '0'
-        })
+        this.indexData = res.data.list
         this.slider = res.data.slider
       })
     },
     // 查看小说详情
     toDetail(id) {
-      console.log(id)
       this.$router.push({ path: `/movie/detail`, query: { id }})
     },
     toSearch() {
@@ -195,6 +192,12 @@ export default {
           text-align: right;
         }
       }
+    }
+    .no-data {
+      font-size: 14px;
+      color: #666;
+      text-align: center;
+      width: 100%;
     }
   }
 }

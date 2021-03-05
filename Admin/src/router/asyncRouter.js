@@ -1,18 +1,18 @@
 /* Layout */
 import Layout from '@/layout'
 export const asyncRouter = [
-  {
-    path: '/',
-    component: Layout,
-    redirect: '/home',
-    name: 'Index',
-    children: [{
-      path: 'home',
-      name: 'Home',
-      component: () => import('@/views/home/index'),
-      meta: { title: '首页', icon: 'home' }
-    }]
-  },
+  // {
+  //   path: '/',
+  //   component: Layout,
+  //   redirect: '/home',
+  //   name: 'Index',
+  //   children: [{
+  //     path: 'home',
+  //     name: 'Home',
+  //     component: () => import('@/views/home/index'),
+  //     meta: { title: '首页', icon: 'home' }
+  //   }]
+  // },
   {
     path: '/member',
     component: Layout,
