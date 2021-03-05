@@ -36,7 +36,7 @@
         </div>
       </div>
     </div>
-    
+
     <van-popup
       v-model="showProfile"
       closeable
@@ -45,8 +45,8 @@
       style="height: 40%"
       @close="showProfile = false"
     >
-     <div class="title">简介</div>
-     <div class="description" v-html="mvInfo.description"></div>
+      <div class="title">简介</div>
+      <div class="description" v-html="mvInfo.description" />
     </van-popup>
 
     <!-- 影片剧集 -->
@@ -82,7 +82,8 @@ export default {
     return {
       mvInfo: {
         name: '赘婿',
-        description: '撒大声地按实际符合噶几会覆盖加工时费的话就按个讲话稿萨计划发噶机会市房管局好 <br> niashdiasd '
+        description:
+          '撒大声地按实际符合噶几会覆盖加工时费的话就按个讲话稿萨计划发噶机会市房管局好 <br> niashdiasd '
       },
       video: {
         pic:
@@ -195,7 +196,7 @@ export default {
       line-height: 10px;
     }
   }
-  .title{
+  .title {
     padding: 15px 0;
     width: 100%;
     font-size: 18px;
@@ -203,7 +204,7 @@ export default {
     font-weight: bold;
     text-align: center;
   }
-  .description{
+  .description {
     padding: 10px;
     font-size: 16px;
     color: #666;

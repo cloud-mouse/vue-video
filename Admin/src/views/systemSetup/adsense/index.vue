@@ -1,19 +1,8 @@
 <template>
   <div class="ad-list main-content">
     <div class="screen-box">
-      <div class="screen-item">
-        <!-- <el-input
-          v-model="keywords"
-          size="small"
-          placeholder="请输入名称"
-          clearable
-          style="width:220px"
-          @keyup.enter.native="fetchData"
-        /> -->
-        <!-- <el-button size="small" icon="el-icon-search" type="primary" @click.native="fetchData">搜索</el-button> -->
-      </div>
       <div class="operation">
-        <el-button v-has="804" size="small" icon="el-icon-plus" type="primary" @click="showDialog('add')">新增</el-button>
+        <el-button v-has="'AddAd'" size="small" icon="el-icon-plus" type="primary" @click="showDialog('add')">新增</el-button>
       </div>
     </div>
     <div class="content">
@@ -37,28 +26,40 @@
           width="100"
         >
           <template slot-scope="scope">
-            <img :src="scope.row.image_path" alt="" width="60" height="60">
+            <img :src="scope.row.path" alt="" width="60" height="60">
           </template>
         </el-table-column>
         <el-table-column
-          prop="slider_name"
+          prop="name"
           label="名称"
           align="center"
         />
-        <!-- <el-table-column
-          label="广告位状态"
+        <el-table-column
+          label="状态"
           align="center"
-          width="250"
         >
           <template slot-scope="scope">
-            <el-tag :type="scope.row.del | statusFilter">{{ scope.row.del==0?'已打烊':'营业中' }}</el-tag>
+            <el-tag :type="scope.row.status | statusFilter">{{ scope.row.status==='0'?'下架':'上架' }}</el-tag>
           </template>
-        </el-table-column> -->
+        </el-table-column>
         <el-table-column
-          prop="created_at"
+          prop="createTime"
           label="创建时间"
           align="center"
-        />
+        >
+          <template slot-scope="scope">
+            {{ scope.row.createTime | timeFormat }}
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="updateTime"
+          label="更新时间"
+          align="center"
+        >
+          <template slot-scope="scope">
+            {{ scope.row.updateTime | timeFormat }}
+          </template>
+        </el-table-column>
         <el-table-column
           fixed="right"
           label="操作"
@@ -70,59 +71,33 @@
               @click.native="showDialog('detail', scope.row)"
             >查看</el-button>
             <el-button
-              v-has="806"
               size="mini"
               type="danger"
-              style="margin-left: 0"
-              @click="handleDelete(scope.row.id)"
+              @click="handleDelete(scope.row._id)"
             >删除</el-button>
-            <el-button
-              v-if="scope.$index!==0"
-              v-has="806"
-              size="mini"
-              type="success"
-              style="margin-left: 0"
-              :loading="btnLoading"
-              @click="sortBtn(scope.row.id, 'up')"
-            >上移</el-button>
-            <el-button
-              v-if="scope.$index!==adList.length-1"
-              v-has="806"
-              size="mini"
-              type="success"
-              style="margin-left: 0"
-              :loading="btnLoading"
-              @click="sortBtn(scope.row.id, 'down')"
-            >下移</el-button>
           </template>
         </el-table-column>
       </el-table>
-      <!-- 分页 -->
-      <!-- <div class="pagination-box">
-        <el-pagination
-          :total="adList.length"
-          :current-page="currentPage"
-          :page-sizes="[5, 10, 50, 100]"
-          :page-size="pageSize"
-          layout="total, sizes, prev, pager, next, jumper"
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-        />
-      </div> -->
     </div>
     <!-- 广告位新增，详情，编辑弹框 -->
     <el-dialog v-dialogDrag center :title="dialogType=='add'? '新增广告位': dialogType=='edit'? '编辑广告位': '广告位详情'" :visible.sync="dialogFormVisible">
       <el-form ref="form" :model="form" :rules="rules" label-width="100px" label-position="left" size="small">
-        <el-form-item label="广告位名称" prop="slider_name">
-          <el-input v-model="form.slider_name " :disabled="dialogType=='detail'" />
+        <el-form-item label="广告位名称" prop="name">
+          <el-input v-model="form.name " :disabled="dialogType=='detail'" />
         </el-form-item>
-        <el-form-item label="广告位图片" prop="image_path">
-          <img-upload
-            :img-data="form.image_path"
-            :pic-max="1"
-            :disabled="dialogType=='detail'"
-            @chooseImg="imageChoose"
-          />
+        <el-form-item label="广告位图片" prop="path">
+          <el-upload
+            class="uploader"
+            :action="uploadUrl"
+            :headers="{'Authorization': `Basic ${token}`}"
+            :show-file-list="false"
+            :disabled="dialogType == 'detail'"
+            :on-success="handleAvatarSuccess"
+            :before-upload="beforeAvatarUpload"
+          >
+            <img v-if="form.path" :src="form.path" class="cloud_img">
+            <i v-else class="el-icon-plus uploader-icon" />
+          </el-upload>
         </el-form-item>
         <el-form-item label="排序">
           <el-input v-model="form.sort " :disabled="dialogType=='detail'" />
@@ -130,8 +105,15 @@
         <el-form-item label="链接">
           <el-input v-model="form.link " :disabled="dialogType=='detail'" />
         </el-form-item>
+        <el-form-item label="是否上架">
+          <el-switch
+            v-model="form.status"
+            active-value="1"
+            inactive-value="0"
+          />
+        </el-form-item>
         <el-form-item>
-          <el-button v-if="dialogType!=='detail'" v-has="804" type="primary" @click="onSubmit('form')">保存</el-button>
+          <el-button v-if="dialogType!=='detail'" v-has="'AddAd'" type="primary" @click="onSubmit('form')">保存</el-button>
           <el-button v-else v-has="805" type="primary" @click="dialogType='edit'">编辑</el-button>
           <el-button @click="dialogFormVisible = false">取消</el-button>
         </el-form-item>
@@ -141,28 +123,41 @@
 </template>
 
 <script>
-import { adsense } from '@/api/system'
+import { adsenseApi } from '@/api/system'
+import { formatTime } from '@/utils'
+import { getToken } from '@/utils/auth'
 export default {
-  components: {
+  filters: {
+    timeFormat(time) {
+      return formatTime(new Date(time))
+    },
+    statusFilter(status) {
+      const statusMap = {
+        1: 'success',
+        0: 'danger'
+      }
+      return statusMap[status]
+    }
   },
   data() {
     return {
       loading: true,
-      baseUrl: process.env.VUE_APP_BASE_API,
       adList: [],
+      token: getToken(),
       dialogFormVisible: false,
       form: {
-        slider_name: '',
-        image_path: '',
-        sort: '',
-        link: ''
+        name: '',
+        path: '',
+        sort: '0',
+        link: '',
+        status: '1'
       },
       btnLoading: false,
       rules: {
-        slider_name: [
+        name: [
           { required: true, message: '请输入广告位名称', trigger: 'blur' }
         ],
-        image_path: [
+        path: [
           { required: true, message: '请上传广告位图片', trigger: 'blur' }
         ]
       },
@@ -174,10 +169,11 @@ export default {
       if (val === false) {
         this.$refs['form'].resetFields()
         this.form = {
-          slider_name: '',
-          image_path: '',
+          name: '',
+          path: '',
           sort: '',
-          link: ''
+          link: '',
+          status: '1'
         }
       }
     }
@@ -188,7 +184,7 @@ export default {
   methods: {
     fetchData() {
       // 获取广告位列表
-      adsense.getAdsenseList().then(res => {
+      adsenseApi.getList().then(res => {
         this.loading = false
         this.adList = res.data
       }).catch(() => {
@@ -198,44 +194,18 @@ export default {
     showDialog(type, form) {
       this.dialogType = type
       this.dialogFormVisible = true
-      if (form && form.id) {
+      if (form && form._id) {
         // 请求分类详情
-        this.form.id = form.id
-        this.form.slider_name = form.slider_name
-        this.form.image_path = form.image_path
-        this.form.link = form.link
-        this.form.sort = form.sort
+        this.form = JSON.parse(JSON.stringify(form))
       }
-    },
-    sortBtn(id, type) {
-      this.btnLoading = true
-      adsense.sortSlider({
-        id: id,
-        sort: type
-      }).then(res => {
-        this.$message({
-          type: 'success',
-          message: res.msg || '修改成功!'
-        })
-        setTimeout(() => {
-          this.fetchData()
-          this.btnLoading = false
-        }, 500)
-      }).catch(() => {
-        this.btnLoading = false
-        this.$message({
-          type: 'info',
-          message: '修改失败!'
-        })
-      })
     },
     onSubmit(formName) {
       const _this = this
       _this.$refs[formName].validate((valid) => {
         if (valid) {
-          if (_this.form.id) {
-            adsense.editAdsense(_this.form).then(res => {
-              if (res.code === 0) {
+          if (_this.form._id) {
+            adsenseApi.updateItem(_this.form).then(res => {
+              if (res.code === 200) {
                 this.$message({
                   type: 'success',
                   message: res.msg || '修改成功!'
@@ -252,8 +222,8 @@ export default {
               }
             })
           } else {
-            adsense.addAdsense(_this.form).then(res => {
-              if (res.code === 0) {
+            adsenseApi.addItem(_this.form).then(res => {
+              if (res.code === 200) {
                 this.$message({
                   type: 'success',
                   message: res.msg || '添加成功!'
@@ -272,11 +242,26 @@ export default {
         }
       })
     },
-    // 图片上传模块
-    imageChoose(imgArray) {
-      this.form.image_path = imgArray
-      this.$refs.form.validateField('images')
-      // this.imageModalConfig.visible = false;
+    // 上传图片
+    handleAvatarSuccess(res, file) {
+      if (res.code === 1) {
+        this.form.path = res.path
+        this.$message.success(res.msg)
+      } else {
+        this.$message.error(res.msg)
+      }
+    },
+    beforeAvatarUpload(file) {
+      const isJPG = file.type === 'image/jpeg' || file.type === 'image/png'
+      const isLt2M = file.size / 1024 / 1024 < 2
+
+      if (!isJPG) {
+        this.$message.error('上传图片只能是 JPG/PNG 格式!')
+      }
+      if (!isLt2M) {
+        this.$message.error('上传图片大小不能超过 2MB!')
+      }
+      return isJPG && isLt2M
     },
     handleDelete(id) {
       this.$confirm('是否删除该广告位?', '提示', {
@@ -285,7 +270,7 @@ export default {
         type: 'warning',
         confirmButtonClass: 'danger'
       }).then(() => {
-        adsense.deleteAdsense({ id: id }).then(res => {
+        adsenseApi.deleteItem({ id: id }).then(res => {
           this.$message({
             type: 'success',
             message: '删除成功!'
@@ -309,11 +294,6 @@ export default {
     .screen-item{
       text-align: left;
     }
-  }
-  .operation{
-    position: relative;
-    top: 0;
-    right: 0;
   }
 }
 </style>

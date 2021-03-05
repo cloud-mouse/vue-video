@@ -21,7 +21,7 @@
           align="center"
         >
           <template slot-scope="scope">
-            {{ scope.row.icon }}
+            <img :src="scope.row.icon" width="30" height="30" alt="" class="class_icon">
           </template>
         </el-table-column>
         <el-table-column
@@ -54,14 +54,15 @@
         </el-table-column>
         <el-table-column fixed="right" label="操作" align="center">
           <template slot-scope="scope">
-            <el-button
-              size="mini"
-              @click.native="showDialog('detail', scope.row)"
-            >查看</el-button>
             <!-- <el-button
               size="mini"
+              @click.native="showDialog('detail', scope.row)"
+            >查看</el-button> -->
+            <el-button
+              size="mini"
+              type="primary"
               @click.native="showDialog('edit', scope.row)"
-            >编辑</el-button> -->
+            >编辑</el-button>
             <el-button
               size="mini"
               type="danger"
@@ -83,7 +84,6 @@
         />
       </div>
     </div>
-
     <!-- 权限新增，详情，编辑弹框 -->
     <el-dialog
       v-dialogDrag
@@ -110,7 +110,7 @@
             v-model="pid"
             :options="videoClassList"
             :show-all-levels="false"
-            :props="{ value: '_id',label:'title',checkStrictly: true }"
+            :props="{ value: '_id',label:'name',checkStrictly: true }"
             clearable
             :disabled="dialogType == 'detail'"
             @change="handleChange"
@@ -121,8 +121,19 @@
         <el-form-item label="分类名称(name)" prop="name">
           <el-input v-model="form.name" :disabled="dialogType == 'detail'" />
         </el-form-item>
-        <el-form-item label="分类图标(icon)">
-          <el-input v-model="form.icon" :disabled="dialogType == 'detail'" />
+        <el-form-item label="分类图标(icon)" prop="icon">
+          <el-upload
+            class="uploader"
+            :action="uploadUrl"
+            :headers="{'Authorization': `Basic ${token}`}"
+            :show-file-list="false"
+            :disabled="dialogType == 'detail'"
+            :on-success="handleAvatarSuccess"
+            :before-upload="beforeAvatarUpload"
+          >
+            <img v-if="form.icon" :src="form.icon" class="cloud_img">
+            <i v-else class="el-icon-plus uploader-icon" />
+          </el-upload>
         </el-form-item>
         <el-form-item label="分类排序(sort)">
           <el-input v-model="form.sort" :disabled="dialogType == 'detail'" />
@@ -151,6 +162,7 @@
 <script>
 import { videoClassApi } from '@/api/video'
 import { formatTime } from '@/utils'
+import { getToken } from '@/utils/auth'
 export default {
   filters: {
     timeFormat(time) {
@@ -164,6 +176,7 @@ export default {
       videoClassList: [],
       dialogFormVisible: false,
       pid: [],
+      token: getToken(),
       form: {
         pid: '0',
         name: '',
@@ -175,7 +188,8 @@ export default {
       currentPage: 1,
       total: 0,
       rules: {
-        name: [{ required: true, trigger: 'blur', message: '请填写分类名称' }]
+        name: [{ required: true, trigger: 'blur', message: '请填写分类名称' }],
+        icon: [{ required: true, trigger: 'blur', message: '请上传分类图标' }]
       },
       dialogType: 'add'
     }
@@ -261,6 +275,27 @@ export default {
         }
       })
     },
+    // 上传图片
+    handleAvatarSuccess(res, file) {
+      if (res.code === 1) {
+        this.form.icon = res.path
+        this.$message.success(res.msg)
+      } else {
+        this.$message.error(res.msg)
+      }
+    },
+    beforeAvatarUpload(file) {
+      const isJPG = file.type === 'image/jpeg' || file.type === 'image/png'
+      const isLt2M = file.size / 1024 / 1024 < 2
+
+      if (!isJPG) {
+        this.$message.error('上传图片只能是 JPG/PNG 格式!')
+      }
+      if (!isLt2M) {
+        this.$message.error('上传图片大小不能超过 2MB!')
+      }
+      return isJPG && isLt2M
+    },
     handleCurrentChange(val) {
       this.currentPage = val
       this.fetchData()
@@ -307,6 +342,10 @@ export default {
       width: 100%;
       text-align: right;
     }
+  }
+  .class_icon{
+    display: inline-block;
+    vertical-align: middle;
   }
 }
 </style>

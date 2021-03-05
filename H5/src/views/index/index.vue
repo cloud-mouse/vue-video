@@ -22,7 +22,7 @@
       >
         <van-swipe-item v-for="(image, index) in slider" :key="index">
           <a :href="image.link" target="_blank">
-            <img v-lazy="image.img_path" @click="linkJump(image.link)">
+            <img v-lazy="image.path" @click="linkJump(image.link)">
           </a>
         </van-swipe-item>
       </van-swipe>
@@ -41,7 +41,7 @@
         <van-tab
           v-for="item in indexData"
           :key="item._id"
-          :title="item.class_name"
+          :title="item.name"
         >
           <div v-if="item.video && item.video.length" class="video-content">
             <div
@@ -81,6 +81,7 @@
 <script>
 import NoData from '@/components/NoData'
 import { indexApi } from '@/api/home'
+import tree from '@/utils/tree'
 export default {
   components: {
     NoData
@@ -89,86 +90,20 @@ export default {
     return {
       value: '',
       active: '',
-      slider: [
-        {
-          link: '',
-          img_path:
-            'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fdingyue.nosdn.127.net%2FTf6CecDaze41F5tDiVtnGwDdUNkaGQ1SeF8qvJY1WDZOG1543544455676compressflag.jpg&refer=http%3A%2F%2Fdingyue.nosdn.127.net&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1617347706&t=cf30a3e09f3753d7ad936d4f81bc322c'
-        },
-        {
-          link: '',
-          img_path:
-            'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fqqpublic.qpic.cn%2Fqq_public%2F0%2F0-3185099299-388C5E27136DB16C4ECE618635BD864B%2F0%3Ffmt%3Djpg%26size%3D87%26h%3D325%26w%3D618%26ppv%3D1&refer=http%3A%2F%2Fqqpublic.qpic.cn&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1617347732&t=e453aded86c19ee6e9d2fba16c8756c1'
-        }
-      ],
-      indexData: [
-        {
-          _id: '1',
-          class_name: '推荐',
-          video: [
-            {
-              name: '精选推荐',
-              list: [{}]
-            },
-            {
-              name: '电视剧推荐',
-              list: [
-                {
-                  id: 1,
-                  name: '赘婿',
-                  episodes: '28',
-                  isOver: 0,
-                  cover:
-                    'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fqqpublic.qpic.cn%2Fqq_public%2F0%2F0-3185099299-388C5E27136DB16C4ECE618635BD864B%2F0%3Ffmt%3Djpg%26size%3D87%26h%3D325%26w%3D618%26ppv%3D1&refer=http%3A%2F%2Fqqpublic.qpic.cn&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1617347732&t=e453aded86c19ee6e9d2fba16c8756c1'
-                },
-                {
-                  id: 2,
-                  name: '赘婿',
-                  episodes: '28',
-                  isOver: 1,
-                  cover:
-                    'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fqqpublic.qpic.cn%2Fqq_public%2F0%2F0-3185099299-388C5E27136DB16C4ECE618635BD864B%2F0%3Ffmt%3Djpg%26size%3D87%26h%3D325%26w%3D618%26ppv%3D1&refer=http%3A%2F%2Fqqpublic.qpic.cn&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1617347732&t=e453aded86c19ee6e9d2fba16c8756c1'
-                },
-                {
-                  id: 3,
-                  name: '赘婿',
-                  episodes: '28',
-                  isOver: 0,
-                  cover:
-                    'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fqqpublic.qpic.cn%2Fqq_public%2F0%2F0-3185099299-388C5E27136DB16C4ECE618635BD864B%2F0%3Ffmt%3Djpg%26size%3D87%26h%3D325%26w%3D618%26ppv%3D1&refer=http%3A%2F%2Fqqpublic.qpic.cn&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1617347732&t=e453aded86c19ee6e9d2fba16c8756c1'
-                }
-              ]
-            }
-          ]
-        },
-        {
-          _id: '2',
-          class_name: '电影'
-        },
-        {
-          _id: '3',
-          class_name: '电视剧'
-        },
-        {
-          _id: '4',
-          class_name: '动漫'
-        },
-        {
-          _id: '5',
-          class_name: '综艺'
-        }
-      ],
+      slider: [],
+      indexData: [],
       indicatorColor: '#fff'
     }
   },
   created() {
-    // this.getIndex()
+    this.getIndex()
   },
   methods: {
     // 请求首页数据
     getIndex() {
       indexApi.getIndex().then(res => {
-        this.indexData = res.data
+        this.indexData = tree.listToTreeMulti(res.data.list)
+        this.slider = res.data.slider
       })
     },
     // 查看小说详情

@@ -23,25 +23,14 @@ const updateOne = async(req, res, next) =>{
 }
 // 获取列表
 const getList = async (req, res, next) => {
-  let { currentPage, pageSize } = req.query
-  let permission = await Movie.find({ pid: '0' }).skip((currentPage - 1) * pageSize).sort({sort:-1}).limit(pageSize * 1).lean() // 查询顶级
-  const count = await Movie.countDocuments({ pid: '0' })  // 计数
-  // 递归获取children
-  for(let i=0; i<permission.length; i++) {
-    permission[i] = await getChildren(permission[i])
-  }
-  res.send({ code: 200, msg: '获取成功', data: {list: permission, count: count } })
-}
-// 递归查询children
-const getChildren = async (item) => {
-  if (item._id) {
-    let child = await Movie.find({ pid: item._id }).lean() // 查询下级
-    if (!child.length) return item
-    item.children = child
-    for(let j = 0; j<child.length; j++) {
-      child[j] = await getChildren(child[j])
-    }
-    return item
+  let { id, currentPage, pageSize } = req.query
+  if(!id) {
+    let videos = await Movie.find().skip((currentPage - 1) * pageSize).populate('movieClass').sort({sort:-1}).limit(pageSize * 1).lean() // 查询顶级
+    const count = await Movie.countDocuments()  // 计数
+    res.send({ code: 200, msg: '获取成功', data: {list: videos, count: count } })
+  }else {
+    let video = await Movie.findById(id).populate('movieClass')
+    res.send({ code: 200, msg: '获取成功', data: video })
   }
 }
 // 删除
@@ -50,7 +39,6 @@ const deleteOne = async (req, res, next) => {
   try {
     if (id) {
       result = await Movie.findByIdAndDelete({ _id: id })
-      await Movie.findOneAndUpdate({ pid: id }, {pid: '0'})
       if (!result) return res.send({ code: 422, msg: result })
       res.send({ code: 200, msg: '删除成功', data: result })
     } else {

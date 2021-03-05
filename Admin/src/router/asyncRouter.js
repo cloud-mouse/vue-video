@@ -13,7 +13,6 @@ export const asyncRouter = [
       meta: { title: '首页', icon: 'home' }
     }]
   },
-
   {
     path: '/member',
     component: Layout,
@@ -45,6 +44,13 @@ export const asyncRouter = [
         name: 'VideoList',
         component: () => import('@/views/video/list/index'),
         meta: { title: '影视列表' }
+      },
+      {
+        path: 'episodes',
+        name: 'VideoEpisodes',
+        hidden: true,
+        component: () => import('@/views/video/episodes/index'),
+        meta: { title: '影视剧集' }
       }
     ]
   },
@@ -100,39 +106,17 @@ export const asyncRouter = [
   },
   {
     path: '/system',
+    name: 'System',
     component: Layout,
     alwaysShow: true,
     redirect: '/system/logisticTemplate',
-    meta: { title: ' 设置', icon: 'system' },
+    meta: { title: ' 系统设置', icon: 'system' },
     children: [
       {
-        path: '/machineManage',
-        name: 'machineManage',
-        component: () => import('@/views/systemSetup/machineManage/list'),
-        meta: { title: '机器管理' }
-      }, {
         path: 'adsense',
         name: 'Adsense',
         component: () => import('@/views/systemSetup/adsense/index'),
         meta: { title: '广告位' }
-      }, {
-        path: 'logisticTemplate',
-        name: 'LogisticTemplate',
-        component: () => import('@/views/systemSetup/logisticTemplate/list'),
-        meta: { title: '物流模板' }
-      },
-      {
-        path: 'logisticTempEdit:id(\\d+)?',
-        name: 'LogisticTempEdit',
-        hidden: true,
-        component: () => import('@/views/systemSetup/logisticTemplate/edit'),
-        meta: { title: '物流模板编辑', activeMenu: '/system/logisticTemplate' }
-      },
-      {
-        path: 'embroidTemplate',
-        name: 'EmbroidTemplate',
-        component: () => import('@/views/systemSetup/embroidTemplate/index'),
-        meta: { title: '刺绣模板' }
       }, {
         path: 'platformSettings',
         name: 'PlatformSettings',

@@ -12,6 +12,30 @@ export function getLevels(tree) {
 }
 
 /**
+ * Merges two objects, giving the last one precedence
+ * @param {Object} target
+ * @param {(Object|Array)} source
+ * @returns {Object}
+ */
+export function objectMerge(target, source) {
+  if (typeof target !== 'object') {
+    target = {}
+  }
+  if (Array.isArray(source)) {
+    return source.slice()
+  }
+  Object.keys(source).forEach(property => {
+    const sourceProperty = source[property]
+    if (typeof sourceProperty === 'object') {
+      target[property] = objectMerge(target[property], sourceProperty)
+    } else {
+      target[property] = sourceProperty
+    }
+  })
+  return target
+}
+
+/**
  * 笛卡尔积运算
  * @param  {[type]} tree   [description]
  * @param  {Array}  stocks [description]
@@ -79,7 +103,7 @@ export function isEqual(prevSKU, nextSKU, options) {
         prevSKU[index][optionValue] === nextSKU[index][optionValue] &&
         leaf.length === prevLeaf.length &&
         leaf.map(item => item[optionValue]).join(',') ===
-          prevLeaf.map(item => item[optionValue]).join(',')
+        prevLeaf.map(item => item[optionValue]).join(',')
       )
     })
   )
@@ -204,7 +228,7 @@ export function imageUrlToBase64(url) {
 export function debounce(fn, wait) {
   let timeout = null
   wait = wait || 600
-  return function() {
+  return function () {
     const that = this
     if (timeout !== null) clearTimeout(timeout)
     timeout = setTimeout(() => {
@@ -230,7 +254,7 @@ export function getNaturalImgSize(img, callback) {
   } else { // IE6/7/8
     var image = new Image()
     image.src = img
-    image.onload = function() {
+    image.onload = function () {
       callback({
         w: image.width,
         h: image.height

@@ -37,3 +37,37 @@ export default {
   }
 }
 </script>
+<style lang="scss">
+.uploader{
+  .el-upload {
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .el-upload:hover {
+    border-color: #409EFF;
+  }
+  .uploader-icon {
+    font-size: 28px;
+    color: #8c939d;
+    width: 150px;
+    height: 150px;
+    line-height: 150px;
+    text-align: center;
+  }
+  .cloud_img {
+    width: 150px;
+    height: 150px;
+    display: block;
+  }
+}
+
+.changes-status.el-switch.is-disabled {
+  opacity: 1;
+  .el-switch__core {
+    cursor: pointer;
+  }
+}
+</style>

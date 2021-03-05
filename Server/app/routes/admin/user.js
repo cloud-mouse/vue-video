@@ -3,7 +3,7 @@ var router = express.Router();
 // 控制器， 主要写一些和模型交互的方法
 const AdminUserController = require('../../controllers/AdminUser')
 const checkToken = require('../../middleware/checkToken')
-// 用户
+// 用户 注册登录
 router.post('/register', AdminUserController.register);
 router.post('/login', AdminUserController.login);
 // 获取用户信息

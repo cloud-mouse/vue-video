@@ -2,7 +2,6 @@ var express = require('express');
 var router = express.Router();
 const checkToken = require('../../middleware/checkToken')
 const RoleController = require('../../controllers/Role')
-const Role = require('../../models/Role')
 
 // 创建角色
 router.post('/', checkToken, RoleController.create);

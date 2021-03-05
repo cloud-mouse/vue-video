@@ -8,6 +8,7 @@ var cors = require('cors')
 var indexRouter = require('./app/routes/index');
 var usersRouter = require('./app/routes/users');
 var adminRouter = require('./app/routes/admin/index');
+var webRouter = require('./app/routes/web/index');
 
 var app = express();
 
@@ -25,6 +26,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/admin-api', adminRouter);
+app.use('/web-api', webRouter);
+
+app.use('/file', require('./app/routes/file')); // 文件上传接口  用来上传打包后的文件
+app.use('/upload', require('./app/routes/upload')); // 图片上传到oss接口
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
