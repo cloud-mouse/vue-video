@@ -103,6 +103,9 @@ export default {
     getIndex() {
       indexApi.getIndex().then(res => {
         this.indexData = tree.listToTreeMulti(res.data.list)
+        let list = res.data.filters(item=>{
+          return item.pid === '0'
+        })
         this.slider = res.data.slider
       })
     },
