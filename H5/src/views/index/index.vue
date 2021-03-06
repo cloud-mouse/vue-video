@@ -112,7 +112,7 @@ export default {
       this.$router.push({ path: `/movie/detail`, query: { id }})
     },
     toSearch() {
-      this.$router.push({ path: `/bookList` })
+      this.$router.push({ path: `/search` })
     },
     linkJump(url) {}
   }
@@ -122,7 +122,7 @@ export default {
 .index-view {
   padding-bottom: 50px;
   .index-banner {
-    padding: 10px 12px;
+    padding: 0 12px 10px;
     .my-swipe {
       height: 180px;
       border-radius: 12px;

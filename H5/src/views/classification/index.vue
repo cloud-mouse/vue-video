@@ -25,7 +25,7 @@
           :key="item._id"
           class="sub-categary"
         >
-          <div class="sub-name" @click="toGoodsList(item._id)">
+          <div class="sub-name" @click="toMovieList(item._id)">
             {{ item.name }}
           </div>
           <div class="sub-child">
@@ -33,7 +33,7 @@
               <li
                 v-for="(child, i) in item.children"
                 :key="i"
-                @click="toGoodsList(child._id)"
+                @click="toMovieList(child._id)"
               >
                 <img :src="child.icon" alt="">
                 <p>{{ child.name }}</p>
@@ -101,10 +101,10 @@ export default {
       })
     },
     toSearch() {
-      this.$router.push({ path: `/goodsList` })
+      this.$router.push({ path: `/search` })
     },
-    toGoodsList(id) {
-      this.$router.push({ path: `/goodsList?category_id=${id}` })
+    toMovieList(id) {
+      this.$router.push({ path: `/movieList?class_id=${id}` })
     }
   }
 }
