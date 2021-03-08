@@ -11,7 +11,7 @@ const create = async (req, res, next) => {
   }
 }
 // 更新
-const updateOne = async(req, res, next) =>{
+const updateOne = async (req, res, next) => {
   let body = req.body
   try {
     const result = await Movie.findByIdAndUpdate(body._id, body)
@@ -23,12 +23,16 @@ const updateOne = async(req, res, next) =>{
 }
 // 获取列表
 const getList = async (req, res, next) => {
-  let { id, currentPage, pageSize } = req.query
-  if(!id) {
-    let videos = await Movie.find().skip((currentPage - 1) * pageSize).populate('movieClass').sort({sort:-1}).limit(pageSize * 1).lean() // 查询顶级
+  let { id, keywords, currentPage, pageSize } = req.query
+  const reg = new RegExp(keywords, 'i') //不区分大小写
+  let query = {
+    $or: [{ name: { $regex: reg } }],
+  }
+  if (!id) {
+    let videos = await Movie.find(query).skip((currentPage - 1) * pageSize).populate('movieClass').sort({ sort: -1 }).limit(pageSize * 1).lean() // 查询顶级
     const count = await Movie.countDocuments()  // 计数
-    res.send({ code: 200, msg: '获取成功', data: {list: videos, count: count } })
-  }else {
+    res.send({ code: 200, msg: '获取成功', data: { list: videos, count: count } })
+  } else {
     let video = await Movie.findById(id).populate('movieClass')
     res.send({ code: 200, msg: '获取成功', data: video })
   }
@@ -43,11 +47,11 @@ const deleteOne = async (req, res, next) => {
       res.send({ code: 200, msg: '删除成功', data: result })
     } else {
       res.send({ code: 422, msg: '请选择' })
-    } 
+    }
   } catch (error) {
     res.send({ code: 500, msg: error })
   }
-  
+
 }
 
 module.exports = {
