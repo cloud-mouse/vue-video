@@ -29,7 +29,7 @@ Vue.use(Directive)
 Vue.mixin({
   computed: {
     uploadUrl() {
-      return `${process.env.VUE_APP_BASE_API}/upload/uploadOss`
+      return `${process.env.VUE_APP_BASE_API}/upload/`
     }
   }
 })

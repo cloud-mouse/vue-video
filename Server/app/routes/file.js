@@ -6,6 +6,8 @@ const fs = require("fs")
 const unzipper = require("unzipper")
 const checkToken = require('../middleware/checkToken')
 
+// 这个接口用来上传打包文件的
+
 // 文件上传 暂存位置
 let upload = multer({
   storage: multer.diskStorage({

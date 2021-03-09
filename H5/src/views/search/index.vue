@@ -32,14 +32,14 @@
 </template>
 
 <script>
-import {movieApi} from '@/api/movie'
+import { movieApi } from '@/api/movie'
 export default {
   name: 'Search',
   data() {
     return {
       keywords: '',
       searchHistory: [],
-      showResult: false,
+      showResult: false
     }
   },
   created() {
@@ -51,16 +51,18 @@ export default {
       this.keywords = item
     },
     doSearch() {
-      if (searchHistory.indexOf(this.keywords) === -1) {
+      if (this.searchHistory.indexOf(this.keywords) === -1) {
         this.searchHistory.push(this.keywords)
       }
       localStorage.setItem('search-history', this.searchHistory.join(','))
-      movieApi.getItem({
-        keywords: this.keywords
-      }).then(res=>{
-        console.log(res);
-        this.movieList = res.data.list
-      })
+      movieApi
+        .getItem({
+          keywords: this.keywords
+        })
+        .then(res => {
+          console.log(res)
+          this.movieList = res.data.list
+        })
     }
   }
 }

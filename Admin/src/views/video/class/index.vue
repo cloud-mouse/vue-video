@@ -122,7 +122,7 @@
           <el-input v-model="form.name" :disabled="dialogType == 'detail'" />
         </el-form-item>
         <el-form-item label="分类图标(icon)" prop="icon">
-          <el-upload
+          <!-- <el-upload
             class="uploader"
             :action="uploadUrl"
             :headers="{'Authorization': `Basic ${token}`}"
@@ -133,7 +133,13 @@
           >
             <img v-if="form.icon" :src="form.icon" class="cloud_img">
             <i v-else class="el-icon-plus uploader-icon" />
-          </el-upload>
+          </el-upload> -->
+          <img-upload
+            :disabled="dialogType=='detail'"
+            :img-data="form.icon"
+            :pic-max="1"
+            @chooseImg="imageChoose"
+          />
         </el-form-item>
         <el-form-item label="分类排序(sort)">
           <el-input v-model="form.sort" :disabled="dialogType == 'detail'" />
@@ -163,7 +169,11 @@
 import { videoClassApi } from '@/api/video'
 import { formatTime } from '@/utils'
 import { getToken } from '@/utils/auth'
+import ImgUpload from '@/components/ImgUpload'
 export default {
+  components: {
+    ImgUpload
+  },
   filters: {
     timeFormat(time) {
       return formatTime(new Date(time))
@@ -275,10 +285,15 @@ export default {
         }
       })
     },
+    // 图片上传模块
+    imageChoose(img) {
+      this.form.icon = img
+      this.$refs.form.validateField('icon')
+    },
     // 上传图片
     handleAvatarSuccess(res, file) {
-      if (res.code === 1) {
-        this.form.icon = res.path
+      if (res.code === 200) {
+        this.form.icon = res.data.path
         this.$message.success(res.msg)
       } else {
         this.$message.error(res.msg)

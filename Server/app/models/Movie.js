@@ -13,8 +13,18 @@ const MovieSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'MovieClass',
   },
-  // 年份
-  years: String,
+  area: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'MovieClass',
+  },
+  type: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'MovieClass',
+  },
+  year: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'MovieClass',
+  },
   // 推荐
   recommend: {
     type: String,

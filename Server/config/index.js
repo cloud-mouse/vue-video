@@ -1,18 +1,19 @@
 const JWT_SECRET = 'ahdagdjhagfjhafjhsdbgfhgfisaidfhisadhfuiasdyiuyh'
 const WEB_JWT_SECRET = 'ahdagdjhagfjhafjhsdbgfhgfisaidfhisadhfuiasdyiuyh'
 
-// 对象存储
-const OSS_CONFIG = {
-  region: 'oss-cn-hangzhou',
-  accessKeyId: 'LTAIM1LD8vHjmpxx',
-  accessKeySecret: 'WObtLOMbw15BVwcDIyyd0IMfJBPHrl',
-  bucket: 'vue-video-live',
-  endPoint: 'oss-cn-hangzhou.aliyuncs.com',
-  BucketName: 'vue-video-live.oss-cn-hangzhou.aliyuncs.com',
+let ENV_CONFIG
+if (process.env.NODE_ENV === 'production') {
+  ENV_CONFIG = {
+    URL: 'http://movie.zhanghaoblog.top'
+  }
+} else {
+  ENV_CONFIG = {
+    URL: 'http://localhost:3001'
+  }
 }
 
 module.exports = {
   JWT_SECRET,
   WEB_JWT_SECRET,
-  OSS_CONFIG
+  ENV_CONFIG
 }

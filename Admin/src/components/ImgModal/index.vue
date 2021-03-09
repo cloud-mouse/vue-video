@@ -1,5 +1,5 @@
 <template>
-  <el-dialog width="1040px" :visible.sync="visibleInside" title="我的图片" append-to-body>
+  <el-dialog width="1040px" :visible.sync="visibleInside" title="我的图片" append-to-body :before-close="beforeClose">
     <div class="modal-header">
       <el-button type="primary" size="small" @click="isAdd = true">上传图片</el-button>
       <el-input
@@ -22,25 +22,25 @@
         <el-tree
           :data="categoryList"
           :current-node-key="0"
-          node-key="group_id"
+          node-key="_id"
           :highlight-current="true"
           @node-click="chooseCategory"
         >
-          <span slot-scope="{ node, data }" class="custom-tree-node">
-            <span>{{ data.group_name }}</span>
+          <span slot-scope="{ data }" class="custom-tree-node">
+            <span>{{ data.name }}</span>
           </span>
         </el-tree>
       </div>
       <!-- 图片内容 -->
       <div v-loading="pageAjaxing" class="imgs-ctn">
         <div v-if="imageList.length>0">
-          <div v-for="item in imageList" :key="item.id" class="img-item" @click="chooseImg(item)">
-            <div v-show="activeList.includes(item.id)" class="active">
-              <i>{{ activeList.indexOf(item.id) + 1 }}</i>
+          <div v-for="item in imageList" :key="item._id" class="img-item" @click="chooseImg(item)">
+            <div v-show="activeList.includes(item._id)" class="active">
+              <i>{{ activeList.indexOf(item._id) + 1 }}</i>
             </div>
-            <img :src="item.oss_path" :alt="item.img_name">
-            <span class="img-meta">{{ item.img_init_name }}</span>
-            <p class="img-title" :title="item.img_name">{{ item.img_name }}</p>
+            <img :src="item.path" :alt="item.name">
+            <span class="img-meta">{{ item.filename }}</span>
+            <p class="img-title" :title="item.name">{{ item.name }}</p>
           </div>
         </div>
         <div v-if="!imageList.length" class="noData">暂无数据，可点击左上角“上传图片”按钮添加</div>
@@ -64,7 +64,7 @@
       <el-form :model="dialog.upLoadImg" label-width="96px">
         <el-form-item label="图片分组：">
           <el-cascader
-            v-model="dialog.upLoadImg.group_id"
+            v-model="dialog.upLoadImg.class_id"
             style="width:50%;"
             :options="categoryList"
             size="small"
@@ -114,8 +114,7 @@
 </template>
 
 <script>
-import ImgApi from '@/api/common/image'
-import { GroupApi } from '@/api/common'
+import { galleryApi, galleryClassApi } from '@/api/gallery'
 export default {
   props: {
     visible: {
@@ -144,8 +143,8 @@ export default {
       chooseList: [], // 选择的图片
       count: 0,
       totalPages: 0,
-      pageSize: 21,
-      currentPage: 0,
+      pageSize: 10,
+      currentPage: 1,
       categoryList: [],
       imageList: [],
       dialog: {
@@ -153,15 +152,15 @@ export default {
           url: null,
           urlListShow: [],
           show: false,
-          group_id: 0
+          class_id: '0'
         }
       },
       // 上传数量计数器
       uploadCount: 0,
       selectProp: {
         checkStrictly: true,
-        value: 'group_id',
-        label: 'group_name',
+        value: '_id',
+        label: 'name',
         children: 'children',
         expandTrigger: 'hover'
       }
@@ -185,6 +184,9 @@ export default {
     }
   },
   methods: {
+    beforeClose() {
+      this.$emit('close')
+    },
     changeImgList(file, fileList) {
       // 更改上传图片
       const isJPG = file.raw.type === 'image/jpeg'
@@ -223,12 +225,12 @@ export default {
     // 保存图片
     saveImg(e) {
       // 保存图片
-      const id = this.dialog.upLoadImg.group_id
+      const id = this.dialog.upLoadImg.class_id
       const formData = new FormData()
-      formData.append('image', e.file)
-      formData.append('gallery_group_id', id[id.length - 1])
-      ImgApi.addImage(formData).then(res => {
-        if (res.code !== 0) {
+      formData.append('file', e.file)
+      formData.append('class_id', id[id.length - 1])
+      galleryApi.addImage(formData).then(res => {
+        if (res.code !== 200) {
           this.$message({
             message: res.data.msg,
             type: 'error'
@@ -285,10 +287,10 @@ export default {
     },
     // 获取分组列表
     getList() {
-      GroupApi.getGroupList().then(res => {
-        if (res.code === 0) {
-          this.categoryList = res.data ? res.data : []
-          this.chooseCategory(this.categoryList[0])
+      galleryClassApi.getGalleryClass().then(res => {
+        if (res.code === 200) {
+          this.categoryList = res.data.list || []
+          this.chooseCategory()
         } else {
           this.$message({
             message: res.msg,
@@ -308,18 +310,16 @@ export default {
         return
       }
       this.pageAjaxing = true
-      ImgApi.getList({
+      galleryApi.getList({
         currentPage: this.currentPage,
         pageSize: this.pageSize,
-        img_name: this.keyword,
-        gallery_group_id: this.cId[this.cId.length - 1] || -1 // -1表示全部 0表示未分组
+        name: this.keyword,
+        class_id: this.cId[this.cId.length - 1] // 0表示未分组
       }).then(res => {
         this.pageAjaxing = false
-        if (res.code === 0 && res.data) {
-          this.imageList = res.data.data
+        if (res.code === 200 && res.data.list) {
+          this.imageList = res.data.list
           this.count = res.data.count
-          this.totalPages = res.data.totalPages
-          this.currentPage = res.data.currentPage
         } else {
           this.$message({
             message: res.data.msg,
@@ -332,16 +332,16 @@ export default {
     chooseCategory(item, node) {
       this.cId = []
       while (node && !Array.isArray(node.data)) {
-        this.cId.unshift(node.data.group_id)
+        this.cId.unshift(node.data._id)
         node = node.parent
       }
-      this.cId = this.cId.length > 0 ? this.cId : [0]
-      this.dialog.upLoadImg.group_id = this.cId
+      this.cId = item ? [item._id] : ['']
+      this.dialog.upLoadImg.class_id = this.cId
       this.getImgList()
     },
     // 获取全部分组
     getAll() {
-      this.cId = [-1]
+      this.cId = ['']
       this.getImgList()
     },
     // 获取未分组图片
@@ -362,9 +362,9 @@ export default {
         // // 设置选中
         // obj.index = 1;
         this.chooseList.splice(0, 1, obj)
-        this.activeList.splice(0, 1, obj.id)
+        this.activeList.splice(0, 1, obj._id)
       } else {
-        const index = this.activeList.indexOf(obj.id)
+        const index = this.activeList.indexOf(obj._id)
         if (index !== -1) {
           this.activeList.splice(index, 1)
           this.chooseList.splice(index, 1)
@@ -383,7 +383,7 @@ export default {
             })
           } else {
             this.chooseList.push(obj)
-            this.activeList.push(obj.id)
+            this.activeList.push(obj._id)
             // obj.index = this.activeList.length;
           }
         }

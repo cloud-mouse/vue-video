@@ -10,7 +10,7 @@
             class="mv-name"
           >{{ movieDetail.name
           }}<span
-            style="font-size: 12px"
+            class="mv-recommend"
           >({{ movieDetail.recommend === '1' ? '已完结' : '连载中' }})</span></span>
           <span @click="showProfile = true">简介 <van-icon name="arrow" /></span>
         </div>
@@ -19,7 +19,7 @@
             v-if="movieDetail.movieClass"
             class="mv-class"
           >分类：{{ movieDetail.movieClass.name }} |</span>
-          <span class="mv-date"> 年份：{{ movieDetail.years }} |</span>
+          <!-- <span class="mv-date"> 年份：{{ movieDetail.years }} |</span> -->
           <span class="mv-uptime">
             更新时间：{{ movieDetail.updateTime | timeFormat }}</span>
         </div>
@@ -162,7 +162,7 @@ export default {
         display: flex;
         justify-content: space-between;
         align-content: center;
-        padding: 10px 15px 0;
+        padding: 10px 15px 10px;
         font-size: 14px;
         color: #999;
         span {
@@ -174,6 +174,9 @@ export default {
           font-size: 18px;
           color: #333;
           font-weight: bold;
+        }
+        .mv-recommend{
+          font-size: 12px
         }
       }
       .mv-info {

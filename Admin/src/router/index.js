@@ -110,10 +110,10 @@ export const constantRoutes = [
         component: () => import('@/views/systemSetup/adsense/index'),
         meta: { title: '广告位' }
       }, {
-        path: 'platformSettings',
-        name: 'PlatformSettings',
-        component: () => import('@/views/systemSetup/platformSettings/index'),
-        meta: { title: '平台设置' }
+        path: 'resources',
+        name: 'Resources',
+        component: () => import('@/views/systemSetup/resources/index'),
+        meta: { title: '资源管理' }
       }]
   },
   {

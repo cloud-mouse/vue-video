@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import {  } from '@/api/user'
+// import { login, register } from '@/api/user'
 export default {
   name: 'Register',
   data() {
@@ -18,9 +18,7 @@ export default {
     }
   },
   created() {},
-  methods: {
-
-  }
+  methods: {}
 }
 </script>
 

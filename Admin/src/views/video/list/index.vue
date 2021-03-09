@@ -146,27 +146,42 @@
             :disabled="dialogType == 'detail'"
           />
         </el-form-item>
-        <el-form-item label="影视封面" prop="cover">
-          <el-upload
-            class="uploader"
-            :action="uploadUrl"
-            :headers="{'Authorization': `Basic ${token}`}"
-            :show-file-list="false"
+        <el-form-item label="地区" prop="area">
+          <el-cascader
+            v-model="form.area"
+            :options="videoClassList"
+            :show-all-levels="false"
+            :props="{ value: '_id',label:'name',checkStrictly: true, emitPath: false }"
+            clearable
             :disabled="dialogType == 'detail'"
-            :on-success="handleAvatarSuccess"
-            :before-upload="beforeAvatarUpload"
-          >
-            <img v-if="form.cover" :src="form.cover" class="cloud_img">
-            <i v-else class="el-icon-plus uploader-icon" />
-          </el-upload>
+          />
         </el-form-item>
-        <el-form-item label="影视年代">
-          <el-date-picker
-            v-model="form.years"
-            format
-            value-format="yyyy-MM"
-            type="month"
-            placeholder="选择影视年代"
+        <el-form-item label="类型" prop="type">
+          <el-cascader
+            v-model="form.type"
+            :options="videoClassList"
+            :show-all-levels="false"
+            :props="{ value: '_id',label:'name',checkStrictly: true, emitPath: false }"
+            clearable
+            :disabled="dialogType == 'detail'"
+          />
+        </el-form-item>
+        <el-form-item label="年代" prop="year">
+          <el-cascader
+            v-model="form.year"
+            :options="videoClassList"
+            :show-all-levels="false"
+            :props="{ value: '_id',label:'name',checkStrictly: true, emitPath: false }"
+            clearable
+            :disabled="dialogType == 'detail'"
+          />
+        </el-form-item>
+        <el-form-item label="影视封面" prop="cover">
+          <img-upload
+            :disabled="dialogType=='detail'"
+            :img-data="form.cover"
+            :pic-max="1"
+            @chooseImg="imageChoose"
           />
         </el-form-item>
         <el-form-item label="影视描述">
@@ -210,8 +225,11 @@
 <script>
 import { videoApi, videoClassApi } from '@/api/video'
 import { formatTime } from '@/utils'
-import { getToken } from '@/utils/auth'
+import ImgUpload from '@/components/ImgUpload'
 export default {
+  components: {
+    ImgUpload
+  },
   filters: {
     timeFormat(time) {
       return formatTime(new Date(time))
@@ -231,12 +249,13 @@ export default {
       videoList: [], // 影视列表
       videoClassList: [], // 影视分类列表
       dialogFormVisible: false,
-      token: getToken(),
       form: {
         name: '',
         cover: '',
         movieClass: '',
-        years: '',
+        area: '', // 地区
+        type: '', // 类型
+        year: '', // 年代
         recommend: '0',
         isOver: '0',
         sort: '0',
@@ -248,6 +267,9 @@ export default {
       rules: {
         name: [{ required: true, trigger: 'blur', message: '请填写影视名称' }],
         movieClass: [{ required: true, trigger: 'change', message: '请选择影视分类' }],
+        area: [{ required: true, trigger: 'change', message: '请选择影视地区' }],
+        type: [{ required: true, trigger: 'change', message: '请选择影视类型' }],
+        year: [{ required: true, trigger: 'change', message: '请选择影视年代' }],
         icon: [{ required: true, trigger: 'blur', message: '请上传影视封面' }]
       },
       dialogType: 'add'
@@ -263,7 +285,9 @@ export default {
           movieClass: '',
           description: '',
           cover: '',
-          years: '',
+          area: '', // 地区
+          type: '', // 类型
+          year: '', // 年代
           recommend: '0',
           isOver: '0',
           sort: '0'
@@ -369,26 +393,10 @@ export default {
         }
       })
     },
-    // 上传图片
-    handleAvatarSuccess(res, file) {
-      if (res.code === 1) {
-        this.form.cover = res.path
-        this.$message.success(res.msg)
-      } else {
-        this.$message.error(res.msg)
-      }
-    },
-    beforeAvatarUpload(file) {
-      const isJPG = file.type === 'image/jpeg' || file.type === 'image/png'
-      const isLt2M = file.size / 1024 / 1024 < 2
-
-      if (!isJPG) {
-        this.$message.error('上传图片只能是 JPG/PNG 格式!')
-      }
-      if (!isLt2M) {
-        this.$message.error('上传图片大小不能超过 2MB!')
-      }
-      return isJPG && isLt2M
+    // 图片上传模块
+    imageChoose(img) {
+      this.form.cover = img
+      this.$refs.form.validateField('cover')
     },
     handleCurrentChange(val) {
       this.currentPage = val

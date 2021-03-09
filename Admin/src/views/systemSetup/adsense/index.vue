@@ -83,7 +83,7 @@
           <el-input v-model="form.name" :disabled="dialogType == 'detail'" />
         </el-form-item>
         <el-form-item label="广告位图片" prop="path">
-          <el-upload
+          <!-- <el-upload
             class="uploader"
             :action="uploadUrl"
             :headers="{ Authorization: `Basic ${token}` }"
@@ -94,7 +94,13 @@
           >
             <img v-if="form.path" :src="form.path" class="cloud_img">
             <i v-else class="el-icon-plus uploader-icon" />
-          </el-upload>
+          </el-upload> -->
+          <img-upload
+            :disabled="dialogType=='detail'"
+            :img-data="form.path"
+            :pic-max="1"
+            @chooseImg="imageChoose"
+          />
         </el-form-item>
         <el-form-item label="排序">
           <el-input v-model="form.sort" :disabled="dialogType == 'detail'" />
@@ -131,7 +137,11 @@
 import { adsenseApi } from '@/api/system'
 import { formatTime } from '@/utils'
 import { getToken } from '@/utils/auth'
+import ImgUpload from '@/components/ImgUpload'
 export default {
+  components: {
+    ImgUpload
+  },
   filters: {
     timeFormat(time) {
       return formatTime(new Date(time))
@@ -248,10 +258,15 @@ export default {
         }
       })
     },
+    // 图片上传模块
+    imageChoose(img) {
+      this.form.path = img
+      this.$refs.form.validateField('path')
+    },
     // 上传图片
     handleAvatarSuccess(res, file) {
-      if (res.code === 1) {
-        this.form.path = res.path
+      if (res.code === 200) {
+        this.form.path = res.data.path
         this.$message.success(res.msg)
       } else {
         this.$message.error(res.msg)

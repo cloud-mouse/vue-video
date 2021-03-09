@@ -5,7 +5,7 @@
         <img :src="detail.cover" alt="">
         <div>
           <p>剧名：<span>{{ detail.name }}</span> </p>
-          <p>年代：<span>{{ detail.years }}</span> </p>
+          <!-- <p>年代：<span>{{ detail.years }}</span> </p> -->
           <p>分类：<span>{{ detail.movieClass.name }}</span> </p>
           <p>状态：<span>{{ detail.isOver==='1'?'已完结': '连载中...' }}</span> </p>
           <p>简介：<span>{{ detail.description }}</span> </p>

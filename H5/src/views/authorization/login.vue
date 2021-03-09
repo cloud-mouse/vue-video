@@ -5,14 +5,14 @@
 </template>
 
 <script>
-import {  } from '@/api/user'
+import {} from '@/api/user'
 export default {
   name: 'Login',
   data() {
     return {
       loginForm: {
         username: '',
-        password: '',
+        password: ''
       }
     }
   },

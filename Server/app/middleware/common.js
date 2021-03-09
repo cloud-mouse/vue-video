@@ -1,23 +1,21 @@
-var formidable = require('formidable')
-var { loadjson } = require('../utils')
-// 上传js文件api
-const upload_file = async (req, res, next)=>{
-  var form = new formidable.IncomingForm()
-  form.encoding = 'utf-8' // 编码
-  await form.parse(req, async (err, fields, files) => {
-    let data = await loadjson(files.file.path)
-    if(data) {
-      req.result = {
-        id: fields.id,
-        data: data
-      } 
-      next()
-    }
-    if(err) {
-      res.json({ code: 400, message: err,})
+
+const multer = require('multer')
+var uploadPath = './public/uploads/' + new Date().toISOString().slice(0, 10).replace(/-/g, '')
+// 图片上传
+let upload = multer({
+  storage: multer.diskStorage({
+    destination: uploadPath,
+    filename: function (req, file, cb) {
+      var temp = file.originalname.split('.');
+      var fileType = temp[temp.length - 1];
+      var lastName = '.' + fileType;
+      // 构建图片名
+      var fileName = Date.now() + lastName;
+      cb(null, fileName);
     }
   })
-}
+})
+
 module.exports = {
-  upload_file
+  upload
 }

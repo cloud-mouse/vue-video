@@ -27,12 +27,6 @@ const constantRoutes = [
     meta: { title: '影视搜索' }
   },
   {
-    path: '/movieList',
-    name: 'MovieList',
-    component: () => import('@/views/movie/list'),
-    meta: { title: '影视列表' }
-  },
-  {
     path: '/movie',
     name: 'Movie',
     component: () => import('@/views/movie/index'),
@@ -52,13 +46,13 @@ const constantRoutes = [
   {
     path: '/login',
     name: 'Login',
-    component: ()=> import('@/views/authorization/login'),
+    component: () => import('@/views/authorization/login'),
     meta: { title: '用户登录' }
   },
   {
     path: '/register',
     name: 'Register',
-    component: ()=> import('@/views/authorization/register'),
+    component: () => import('@/views/authorization/register'),
     meta: { title: '用户注册' }
   },
   {

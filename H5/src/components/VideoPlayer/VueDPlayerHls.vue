@@ -21,10 +21,12 @@ export default {
     }
   },
   mounted() {
-    this._initPlayer()
+    this.$nextTick(() => {
+      this._initPlayer()
+    })
     // 以下为隐藏一些作者的信息和视频播放源 如不需要可删除
     document.querySelector('.dplayer-menu').remove() // 隐藏右键菜单
-    document.querySelector('.dplayer-mask').remove()
+    document.querySelector('.dplayer-mask').remove() // 隐藏遮罩
     document.querySelector('.dplayer-info-panel-item-url').remove() // 隐藏播放源
   },
   methods: {
