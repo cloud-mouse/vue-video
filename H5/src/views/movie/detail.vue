@@ -6,13 +6,22 @@
     <div class="video-content">
       <div class="head-title">
         <div class="mv-cell">
-          <span class="mv-name">{{ mvInfo.name }}</span>
+          <span
+            class="mv-name"
+          >{{ movieDetail.name
+          }}<span
+            style="font-size: 12px"
+          >({{ movieDetail.recommend === '1' ? '已完结' : '连载中' }})</span></span>
           <span @click="showProfile = true">简介 <van-icon name="arrow" /></span>
         </div>
         <div class="mv-info">
-          <span class="mv-class">分类：影片分类 |</span>
-          <span class="mv-date"> 年份：2021 |</span>
-          <span class="mv-uptime"> 更新时间：2021-3-4</span>
+          <span
+            v-if="movieDetail.movieClass"
+            class="mv-class"
+          >分类：{{ movieDetail.movieClass.name }} |</span>
+          <span class="mv-date"> 年份：{{ movieDetail.years }} |</span>
+          <span class="mv-uptime">
+            更新时间：{{ movieDetail.updateTime | timeFormat }}</span>
         </div>
       </div>
       <div class="mv-episodes">
@@ -26,10 +35,10 @@
         </div>
         <div class="episodes-list">
           <div
-            v-for="(item, index) in 32"
+            v-for="(item, index) in movieEpisodes"
             :key="index"
             :class="['episodes-item', currentIndex === index ? 'active' : '']"
-            @click="setCurrent(index)"
+            @click="setCurrent(item, index)"
           >
             {{ index + 1 }}
           </div>
@@ -46,7 +55,7 @@
       @close="showProfile = false"
     >
       <div class="title">简介</div>
-      <div class="description" v-html="mvInfo.description" />
+      <div class="description" v-html="movieDetail.description" />
     </van-popup>
 
     <!-- 影片剧集 -->
@@ -59,10 +68,10 @@
     >
       <div class="episodes-all">
         <div
-          v-for="(item, index) in 32"
+          v-for="(item, index) in movieEpisodes"
           :key="index"
           :class="['episodes-item', currentIndex === index ? 'active' : '']"
-          @click="setCurrent(index)"
+          @click="setCurrent(item, index)"
         >
           {{ index + 1 }}
         </div>
@@ -72,38 +81,70 @@
 </template>
 
 <script>
+import { movieApi, movieEpisodesApi } from '@/api/movie'
 import VueDPlayer from '@/components/VideoPlayer/VueDPlayerHls'
+import { formatTime } from '@/utils'
 export default {
   name: 'VideoDetail',
   components: {
     'd-player': VueDPlayer
   },
+  filters: {
+    timeFormat(time) {
+      return formatTime(new Date(time))
+    }
+  },
   data() {
     return {
-      mvInfo: {
-        name: '赘婿',
-        description:
-          '撒大声地按实际符合噶几会覆盖加工时费的话就按个讲话稿萨计划发噶机会市房管局好 <br> niashdiasd '
-      },
+      movieDetail: {},
       video: {
-        pic:
-          'https://img.52swat.cn/upload/vod/20210303-1/1df872b96932638c34338be4c9ecd272.jpg',
-        url: 'https://vod4.buycar5.cn/20210303/5fdtxUVJ/index.m3u8', // 播放视频的路径
+        pic: '',
+        url: '', // 播放视频的路径
         type: 'hls'
       },
-      autoplay: false,
+      autoplay: true,
       player: null,
       showProfile: false, // 显示简介
       showAllEpisodes: false, // 显示全部剧集
-      currentIndex: 0
+      currentIndex: 0,
+      movieEpisodes: [],
+      count: 0
     }
+  },
+  mounted() {
+    this._initData()
   },
   methods: {
     play() {
       console.log('开始播放...')
     },
+    async _initData() {
+      await movieApi.getMovie({ id: this.$route.query.id }).then(res => {
+        this.movieDetail = res.data
+        this.video.pic = res.data.cover
+      })
+
+      await movieEpisodesApi
+        .getMovieEpisodes({
+          movie_id: this.$route.query.id
+        })
+        .then(res => {
+          this.movieEpisodes = res.data.list
+          this.count = res.data.count
+          this.video.url = res.data.list[0].url
+          this.$nextTick(() => {
+            this.$refs.player._initPlayer()
+          })
+          document.title = `${this.movieDetail.name} - ${res.data.list[0].name}`
+        })
+    },
     // 设置当前播放集
-    setCurrent(i) {
+    setCurrent(item, i) {
+      this.video.url = item.url
+      this.$nextTick(() => {
+        this.$refs.player._initPlayer()
+      })
+      document.title = `${this.movieDetail.name} - ${item.name}`
       this.currentIndex = i
       this.showAllEpisodes = false
     }

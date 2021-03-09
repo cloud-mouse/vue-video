@@ -38,7 +38,8 @@ import {
   List,
   Loading,
   SwitchCell,
-  RadioGroup, Radio
+  RadioGroup, Radio,
+  Sidebar, SidebarItem
 } from 'vant'
 
 Vue.use(
@@ -137,4 +138,8 @@ Vue.use(
   RadioGroup
 ).use(
   Radio
+).use(
+  Sidebar
+).use(
+  SidebarItem
 )

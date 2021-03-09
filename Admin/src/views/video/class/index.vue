@@ -110,7 +110,7 @@
             v-model="pid"
             :options="videoClassList"
             :show-all-levels="false"
-            :props="{ value: '_id',label:'name',checkStrictly: true }"
+            :props="{ value: '_id',label:'name',checkStrictly: true, emitPath: false }"
             clearable
             :disabled="dialogType == 'detail'"
             @change="handleChange"
@@ -175,7 +175,7 @@ export default {
       keywords: '',
       videoClassList: [],
       dialogFormVisible: false,
-      pid: [],
+      pid: '',
       token: getToken(),
       form: {
         pid: '0',
@@ -231,13 +231,13 @@ export default {
       this.dialogFormVisible = true
       if (form && form._id) {
         // 请求分类详情
-        this.form = form
+        this.form = JSON.parse(JSON.stringify(form))
         this.pid = form.pid
       }
     },
     // 父id下拉框选择
     handleChange(e) {
-      this.form.pid = e[e.length - 1]
+      this.form.pid = e
     },
     onSubmit(formName) {
       const _this = this

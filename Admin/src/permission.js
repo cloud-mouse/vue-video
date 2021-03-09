@@ -53,15 +53,7 @@ router.beforeEach(async(to, from, next) => {
     // 在免费登录白名单中，直接进入
       next()
     } else {
-    // 校验登录状态
-      await store.dispatch('user/checkLogin').then(() => {
-        next()
-      }).catch(() => {
-        // next(`/login?redirect=${to.path}`)
-        next(`/login`)
-      })
-      // 没有访问权限的其他页将重定向到登录页。
-      NProgress.done()
+      next(`/login?redirect=${to.path}`)
     }
   }
 })

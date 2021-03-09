@@ -5,7 +5,6 @@ const MovieClassSchema = new mongoose.Schema({
   // 名称
   name:{
     type: String,
-    unique: true,
     required: true
   },
   description: String,

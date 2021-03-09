@@ -1,7 +1,7 @@
 <template>
   <div class="cell-item" @click="pathTo">
     <div class="left-box">
-      <svg-icon :icon-class="iconName" />
+      <svg-icon v-if="iconName" :icon-class="iconName" />
       <span>{{ leftText }}</span>
     </div>
     <div class="right-box">
@@ -46,26 +46,24 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.cell-item{
+.cell-item {
   display: flex;
   align-items: center;
   justify-content: space-around;
-  padding: 10px;
   border-bottom: 1px solid #f5f5f5;
-  .left-box{
+  .left-box {
     width: 50%;
     font-size: 20px;
-    .svg-icon{
+    .svg-icon {
       vertical-align: middle;
     }
-    span{
+    span {
       font-size: 14px;
       display: inline-block;
       vertical-align: middle;
-      margin-left: 10px;
     }
   }
-  .right-box{
+  .right-box {
     width: 50%;
     text-align: right;
     font-size: 24px;
