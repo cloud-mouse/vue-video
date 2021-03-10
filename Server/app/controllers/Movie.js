@@ -29,11 +29,11 @@ const getList = async (req, res, next) => {
     $or: [{ name: { $regex: reg } }],
   }
   if (!id) {
-    let videos = await Movie.find(query).skip((currentPage - 1) * pageSize).populate('movieClass').sort({ sort: -1 }).limit(pageSize * 1).lean() // 查询顶级
+    let videos = await Movie.find(query).skip((currentPage - 1) * pageSize).populate('movie_class').sort({ sort: -1 }).limit(pageSize * 1).lean() // 查询顶级
     const count = await Movie.countDocuments()  // 计数
     res.send({ code: 200, msg: '获取成功', data: { list: videos, count: count } })
   } else {
-    let video = await Movie.findById(id).populate('movieClass')
+    let video = await Movie.findById(id).populate('movie_class')
     res.send({ code: 200, msg: '获取成功', data: video })
   }
 }

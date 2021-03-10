@@ -11,40 +11,23 @@
       </div>
     </div>
     <div class="content">
-      <el-table
-        :data="videoList"
-      >
-        <el-table-column
-          label="封面"
-          align="center"
-        >
+      <el-table :data="videoList">
+        <el-table-column label="封面" align="center">
           <template slot-scope="scope">
-            <img :src="scope.row.cover" width="30" height="60" alt="" class="cover">
+            <img :src="scope.row.cover" width="30" alt="" class="cover">
           </template>
         </el-table-column>
-        <el-table-column
-          prop="name"
-          label="剧名"
-          align="center"
-        />
-        <el-table-column
-          label="分类"
-          align="center"
-        >
+        <el-table-column prop="name" label="剧名" align="center" />
+        <el-table-column label="分类" align="center">
           <template slot-scope="scope">
-            <span v-if="scope.row.movieClass">{{ scope.row.movieClass.name }}</span>
+            <span v-if="scope.row.movie_class">{{
+              scope.row.movie_class.name
+            }}</span>
             <span v-else>未选择分类</span>
           </template>
         </el-table-column>
-        <el-table-column
-          prop="sort"
-          label="排序"
-          align="center"
-        />
-        <el-table-column
-          label="首页推荐"
-          align="center"
-        >
+        <el-table-column prop="sort" label="排序" align="center" />
+        <el-table-column label="首页推荐" align="center">
           <template slot-scope="scope">
             <el-switch
               :value="scope.row.recommend"
@@ -54,28 +37,19 @@
             />
           </template>
         </el-table-column>
-        <el-table-column
-          label="是否完结"
-          align="center"
-        >
+        <el-table-column label="是否完结" align="center">
           <template slot-scope="scope">
-            <el-tag :type="scope.row.isOver | statusFilter">{{ scope.row.isOver==='0'?'未完结':'已完结' }}</el-tag>
+            <el-tag :type="scope.row.isOver | statusFilter">{{
+              scope.row.isOver === '0' ? '未完结' : '已完结'
+            }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column
-          prop="createTime"
-          label="创建时间"
-          align="center"
-        >
+        <el-table-column prop="createTime" label="创建时间" align="center">
           <template slot-scope="scope">
             {{ scope.row.createTime | timeFormat }}
           </template>
         </el-table-column>
-        <el-table-column
-          prop="updateTime"
-          label="更新时间"
-          align="center"
-        >
+        <el-table-column prop="updateTime" label="更新时间" align="center">
           <template slot-scope="scope">
             {{ scope.row.updateTime | timeFormat }}
           </template>
@@ -83,9 +57,7 @@
         <el-table-column fixed="right" label="操作" align="center">
           <template slot-scope="scope">
             <router-link :to="`episodes/?id=${scope.row._id}`">
-              <el-button
-                size="mini"
-              >剧集</el-button>
+              <el-button size="mini">剧集</el-button>
             </router-link>
             <el-button
               size="mini"
@@ -122,7 +94,8 @@
           ? '新增影视'
           : dialogType == 'edit'
             ? '编辑影视'
-            : '影视详情'"
+            : '影视详情'
+      "
       :visible.sync="dialogFormVisible"
     >
       <el-form
@@ -134,61 +107,90 @@
         size="small"
       >
         <el-form-item label="影视名称" prop="name">
-          <el-input v-model="form.name" placeholder="输入影视名称" :disabled="dialogType == 'detail'" />
-        </el-form-item>
-        <el-form-item label="影视分类" prop="movieClass">
-          <el-cascader
-            v-model="form.movieClass"
-            :options="videoClassList"
-            :show-all-levels="false"
-            :props="{ value: '_id',label:'name',checkStrictly: true, emitPath: false }"
-            clearable
+          <el-input
+            v-model="form.name"
+            placeholder="输入影视名称"
             :disabled="dialogType == 'detail'"
           />
         </el-form-item>
-        <el-form-item label="地区" prop="area">
-          <el-cascader
-            v-model="form.area"
-            :options="videoClassList"
-            :show-all-levels="false"
-            :props="{ value: '_id',label:'name',checkStrictly: true, emitPath: false }"
+        <el-form-item label="影视分类" prop="movie_class">
+          <el-select
+            v-model="currentClass"
             clearable
+            value-key="_id"
+            placeholder="请选择影视分类"
             :disabled="dialogType == 'detail'"
-          />
+            @change="changeClass"
+          >
+            <el-option
+              v-for="item in videoClassList"
+              :key="item._id"
+              :label="item.name"
+              :value="item"
+            />
+          </el-select>
         </el-form-item>
-        <el-form-item label="类型" prop="type">
-          <el-cascader
-            v-model="form.type"
-            :options="videoClassList"
-            :show-all-levels="false"
-            :props="{ value: '_id',label:'name',checkStrictly: true, emitPath: false }"
+        <el-form-item label="影视种类" prop="movie_type">
+          <el-select
+            v-model="form.movie_type"
             clearable
+            placeholder="请先选择影视分类"
             :disabled="dialogType == 'detail'"
-          />
+          >
+            <el-option
+              v-for="item in currentClass.type"
+              :key="item"
+              :label="item"
+              :value="item"
+            />
+          </el-select>
         </el-form-item>
-        <el-form-item label="年代" prop="year">
-          <el-cascader
+        <el-form-item label="影视类型" prop="movie_genres">
+          <el-select
+            v-model="form.movie_genres"
+            clearable
+            placeholder="请先选择影视分类"
+            :disabled="dialogType == 'detail'"
+          >
+            <el-option
+              v-for="item in currentClass.genres"
+              :key="item"
+              :label="item"
+              :value="item"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="上映年代" prop="year">
+          <el-date-picker
             v-model="form.year"
-            :options="videoClassList"
-            :show-all-levels="false"
-            :props="{ value: '_id',label:'name',checkStrictly: true, emitPath: false }"
-            clearable
-            :disabled="dialogType == 'detail'"
+            format
+            value-format="yyyy"
+            type="year"
+            placeholder="选择影视年代"
           />
         </el-form-item>
         <el-form-item label="影视封面" prop="cover">
           <img-upload
-            :disabled="dialogType=='detail'"
+            :disabled="dialogType == 'detail'"
             :img-data="form.cover"
             :pic-max="1"
             @chooseImg="imageChoose"
           />
         </el-form-item>
         <el-form-item label="影视描述">
-          <el-input v-model="form.description" placeholder="输入影视描述" type="textarea" :disabled="dialogType == 'detail'" />
+          <el-input
+            v-model="form.description"
+            placeholder="输入影视描述"
+            type="textarea"
+            :disabled="dialogType == 'detail'"
+          />
         </el-form-item>
         <el-form-item label="影视排序">
-          <el-input v-model="form.sort" placeholder="输入影视排序" :disabled="dialogType == 'detail'" />
+          <el-input
+            v-model="form.sort"
+            placeholder="输入影视排序"
+            :disabled="dialogType == 'detail'"
+          />
         </el-form-item>
         <el-form-item label="首页推荐">
           <el-switch
@@ -252,9 +254,9 @@ export default {
       form: {
         name: '',
         cover: '',
-        movieClass: '',
-        area: '', // 地区
-        type: '', // 类型
+        movie_class: '',
+        movie_type: '', // 地区
+        movie_genres: '', // 类型
         year: '', // 年代
         recommend: '0',
         isOver: '0',
@@ -264,12 +266,21 @@ export default {
       pageSize: 10,
       currentPage: 1,
       total: 0,
+      currentClass: {},
       rules: {
         name: [{ required: true, trigger: 'blur', message: '请填写影视名称' }],
-        movieClass: [{ required: true, trigger: 'change', message: '请选择影视分类' }],
-        area: [{ required: true, trigger: 'change', message: '请选择影视地区' }],
-        type: [{ required: true, trigger: 'change', message: '请选择影视类型' }],
-        year: [{ required: true, trigger: 'change', message: '请选择影视年代' }],
+        movie_class: [
+          { required: true, trigger: 'change', message: '请选择影视分类' }
+        ],
+        movie_type: [
+          { required: true, trigger: 'change', message: '请选择影视种类' }
+        ],
+        movie_genres: [
+          { required: true, trigger: 'change', message: '请选择影视类型' }
+        ],
+        year: [
+          { required: true, trigger: 'change', message: '请选择影视年代' }
+        ],
         icon: [{ required: true, trigger: 'blur', message: '请上传影视封面' }]
       },
       dialogType: 'add'
@@ -278,21 +289,21 @@ export default {
   watch: {
     dialogFormVisible(val) {
       if (val === false) {
-        this.$refs.form.resetFields()
-        this.$refs.form.clearValidate()
         this.form = {
           name: '',
-          movieClass: '',
           description: '',
           cover: '',
-          area: '', // 地区
-          type: '', // 类型
+          movie_class: '',
+          movie_type: '', // 地区
+          movie_genres: '', // 类型
           year: '', // 年代
           recommend: '0',
           isOver: '0',
           sort: '0'
         }
-        this.pid = []
+        this.currentClass = {}
+        this.$refs.form.resetFields()
+        this.$refs.form.clearValidate()
       }
     }
   },
@@ -334,14 +345,20 @@ export default {
         confirmButtonClass: 'danger'
       })
         .then(() => {
-          videoApi.updateItem({ _id: row._id, recommend: row.recommend === '0' ? '1' : '0' }).then(res => {
-            this.$message.success(res.msg || '修改成功')
-            // 重置表单
-            this.dialogFormVisible = false
-            this.fetchData()
-          }).catch(err => {
-            this.$message.error(err || '编辑失败!')
-          })
+          videoApi
+            .updateItem({
+              _id: row._id,
+              recommend: row.recommend === '0' ? '1' : '0'
+            })
+            .then(res => {
+              this.$message.success(res.msg || '修改成功')
+              // 重置表单
+              this.dialogFormVisible = false
+              this.fetchData()
+            })
+            .catch(err => {
+              this.$message.error(err || '编辑失败!')
+            })
         })
         .catch(() => {
           this.$message({
@@ -350,13 +367,19 @@ export default {
           })
         })
     },
+    changeClass(item) {
+      this.form.movie_class = item._id
+      this.form.movie_type = ''
+      this.form.movie_genres = ''
+    },
     showDialog(type, form) {
       this.dialogType = type
       this.dialogFormVisible = true
       if (form && form._id) {
         // 请求分类详情
+        this.currentClass = form.movie_class
         this.form = JSON.parse(JSON.stringify(form))
-        this.form.movieClass = this.form.movieClass._id
+        this.form.movie_class = this.form.movie_class._id
       }
     },
     onSubmit(formName) {
@@ -364,29 +387,35 @@ export default {
       _this.$refs[formName].validate(valid => {
         if (valid) {
           if (_this.form._id) {
-            videoApi.updateItem(_this.form).then(res => {
-              this.$message.success(res.msg)
-              // 重置表单
-              this.$nextTick(() => {
-                _this.$refs[formName].resetFields()
+            videoApi
+              .updateItem(_this.form)
+              .then(res => {
+                this.$message.success(res.msg)
+                // 重置表单
+                this.$nextTick(() => {
+                  _this.$refs[formName].resetFields()
+                })
+                this.dialogFormVisible = false
+                this.fetchData()
               })
-              this.dialogFormVisible = false
-              this.fetchData()
-            }).catch(err => {
-              this.$message.error(err || '编辑失败!')
-            })
+              .catch(err => {
+                this.$message.error(err || '编辑失败!')
+              })
           } else {
-            videoApi.addItem(_this.form).then(res => {
-              this.$message.success(res.msg)
-              // 重置表单
-              this.$nextTick(() => {
-                _this.$refs[formName].resetFields()
+            videoApi
+              .addItem(_this.form)
+              .then(res => {
+                this.$message.success(res.msg)
+                // 重置表单
+                this.$nextTick(() => {
+                  _this.$refs[formName].resetFields()
+                })
+                this.dialogFormVisible = false
+                this.fetchData()
               })
-              this.dialogFormVisible = false
-              this.fetchData()
-            }).catch(err => {
-              this.$message.error(err || '添加失败!')
-            })
+              .catch(err => {
+                this.$message.error(err || '添加失败!')
+              })
           }
         } else {
           return false
@@ -439,13 +468,13 @@ export default {
     .screen-item {
       text-align: right;
     }
-    .operation{
+    .operation {
       display: block;
       width: 100%;
       text-align: right;
     }
   }
-  .cover{
+  .cover {
     display: inline-block;
     vertical-align: middle;
   }

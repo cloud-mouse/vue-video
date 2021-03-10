@@ -4,32 +4,35 @@ const MovieClass = require('../models/MovieClass')
 
 // 递归查询children
 const getChildren = async (item) => {
-  if (item._id) {
-    let child = await MovieClass.find({ pid: item._id }).lean() // 查询下级
-    if (!child.length) return item
-    item.children = child
-    for (let j = 0; j < child.length; j++) {
-      child[j] = await getChildren(child[j])
-      child[j].movieList = await Movie.find({ movieClass: child[j]._id }).limit(10)
+  try {
+    if (item.type && item.type.length) {
+      item.movieList = []
+      for (let j = 0; j < item.type.length; j++) {
+        let list = await Movie.find({ movie_class: item._id, movie_type: item.type[j] }).limit(10)
+        item.movieList.push({
+          name: item.type[j],
+          list: list
+        })
+      }
+      return item
     }
-    return item
+  } catch (error) {
+    console.log(error);
   }
+  
 }
-// 查询列表
+// 查询首页数据
 const getIndex = async (req, res, next) => {
-  console.log(111);
   try {
     // 获取首页轮播图
     let slider = await Slider.find({ status: '1' }).sort({ 'sort': 1 })
-    let movieClass = await MovieClass.find({ pid: '0' }).lean()
+    let movieClass = await MovieClass.find().lean()
     // 递归获取children
     for (let i = 0; i < movieClass.length; i++) {
       movieClass[i] = await getChildren(movieClass[i])
-      movieClass[i].movieList = await Movie.find({ movieClass: movieClass[i]._id }).limit(10)
     }
     res.send({ code: 200, data: { slider: slider, list: movieClass }, msg: '获取成功' })
   } catch (error) {
-    console.log(error);
     res.send({ code: 422, msg: error })
   }
 }

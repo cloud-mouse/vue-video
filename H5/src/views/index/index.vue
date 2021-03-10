@@ -40,19 +40,19 @@
       >
         <van-tab v-for="item in indexData" :key="item._id" :title="item.name">
           <div
-            v-if="item.children && item.children.length"
+            v-if="item.movieList && item.movieList.length"
             class="video-content"
           >
             <div
-              v-for="(block, index) in item.children"
+              v-for="(block, index) in item.movieList"
               :key="index"
               class="block-list"
             >
               <div class="title">{{ block.name }}</div>
               <div class="video-list">
                 <div
-                  v-for="mv in block.movieList"
-                  :key="mv.id"
+                  v-for="mv in block.list"
+                  :key="mv._id"
                   class="video-item"
                   @click="toDetail(mv._id)"
                 >
@@ -65,7 +65,7 @@
                     }}{{ mv.episodes || 0 }}集
                   </div> -->
                 </div>
-                <div v-if="!block.movieList.length" class="no-data">
+                <div v-if="!block.list.length" class="no-data">
                   暂无内容
                 </div>
               </div>
@@ -147,9 +147,7 @@ export default {
       margin-bottom: 15px;
       .title {
         padding: 15px 0;
-        font-size: 16px;
-        font-weight: bold;
-        background: #fff;
+        font-size: 14px;
       }
       .video-list {
         display: flex;

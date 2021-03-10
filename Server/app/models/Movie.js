@@ -1,3 +1,4 @@
+// 影视模型、
 const mongoose = require('../db/mongodb')
 
 const MovieSchema = new mongoose.Schema({
@@ -9,21 +10,18 @@ const MovieSchema = new mongoose.Schema({
   },
   // 封面
   cover: String,
-  movieClass: {
+  movie_class: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'MovieClass',
   },
-  area: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'MovieClass',
+  movie_type: {
+    type: String
   },
-  type: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'MovieClass',
+  movie_genres: {
+    type: String
   },
   year: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'MovieClass',
+    type: String
   },
   // 推荐
   recommend: {
@@ -39,8 +37,8 @@ const MovieSchema = new mongoose.Schema({
   description: String,
   // 排序
   sort: {
-    type: String,
-    default: '0'
+    type: Number,
+    default: 0
   },
   // 点击量
   pv: {

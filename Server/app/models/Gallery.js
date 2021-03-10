@@ -1,3 +1,6 @@
+// 图库模型
+// 包含了图库和图库分组
+
 const mongoose = require('../db/mongodb')
 
 const GallerySchema = new mongoose.Schema({

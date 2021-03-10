@@ -1,3 +1,4 @@
+// 管理员用户 模型
 const mongoose = require('../db/mongodb')
 const bcrypt = require('bcryptjs')
 

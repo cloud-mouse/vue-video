@@ -1,3 +1,4 @@
+// 用户模型
 const mongoose = require('../db/mongodb')
 const bcrypt = require('bcryptjs')
 

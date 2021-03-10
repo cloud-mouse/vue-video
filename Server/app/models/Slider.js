@@ -1,3 +1,4 @@
+// 广告位模型
 const mongoose = require('../db/mongodb')
 
 const SliderSchema = new mongoose.Schema({

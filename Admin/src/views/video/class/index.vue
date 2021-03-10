@@ -13,8 +13,6 @@
     <div class="content">
       <el-table
         :data="videoClassList"
-        row-key="_id"
-        :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
       >
         <el-table-column
           label="分类图标"
@@ -105,41 +103,50 @@
         label-position="rigth"
         size="small"
       >
-        <el-form-item label="父级分类(pid)" prop="pid">
-          <el-cascader
-            v-model="pid"
-            :options="videoClassList"
-            :show-all-levels="false"
-            :props="{ value: '_id',label:'name',checkStrictly: true, emitPath: false }"
-            clearable
-            :disabled="dialogType == 'detail'"
-            @change="handleChange"
-          />
-          <el-tag type="danger">不选表示顶级</el-tag>
-
-        </el-form-item>
         <el-form-item label="分类名称(name)" prop="name">
           <el-input v-model="form.name" :disabled="dialogType == 'detail'" />
         </el-form-item>
         <el-form-item label="分类图标(icon)" prop="icon">
-          <!-- <el-upload
-            class="uploader"
-            :action="uploadUrl"
-            :headers="{'Authorization': `Basic ${token}`}"
-            :show-file-list="false"
-            :disabled="dialogType == 'detail'"
-            :on-success="handleAvatarSuccess"
-            :before-upload="beforeAvatarUpload"
-          >
-            <img v-if="form.icon" :src="form.icon" class="cloud_img">
-            <i v-else class="el-icon-plus uploader-icon" />
-          </el-upload> -->
           <img-upload
             :disabled="dialogType=='detail'"
             :img-data="form.icon"
             :pic-max="1"
             @chooseImg="imageChoose"
           />
+        </el-form-item>
+        <el-form-item label="种类(type)" prop="type">
+          <el-select
+            v-model="form.type"
+            multiple
+            filterable
+            allow-create
+            default-first-option
+            placeholder="输入添加，可多选"
+          >
+            <el-option
+              v-for="item in areaOption"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="类型(genres)" prop="genres">
+          <el-select
+            v-model="form.genres"
+            multiple
+            filterable
+            allow-create
+            default-first-option
+            placeholder="输入添加，可多选"
+          >
+            <el-option
+              v-for="item in genresOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
         </el-form-item>
         <el-form-item label="分类排序(sort)">
           <el-input v-model="form.sort" :disabled="dialogType == 'detail'" />
@@ -185,13 +192,13 @@ export default {
       keywords: '',
       videoClassList: [],
       dialogFormVisible: false,
-      pid: '',
       token: getToken(),
       form: {
-        pid: '0',
         name: '',
+        type: [],
+        genres: [],
         icon: '',
-        sort: '0',
+        sort: 0,
         description: ''
       },
       pageSize: 10,
@@ -199,8 +206,13 @@ export default {
       total: 0,
       rules: {
         name: [{ required: true, trigger: 'blur', message: '请填写分类名称' }],
-        icon: [{ required: true, trigger: 'blur', message: '请上传分类图标' }]
+        icon: [{ required: true, trigger: 'blur', message: '请上传分类图标' }],
+        type: [{ required: true, trigger: 'change', message: '请选择地区' }],
+        genres: [{ required: true, trigger: 'change', message: '请选择类型' }]
+
       },
+      areaOption: [],
+      genresOptions: [],
       dialogType: 'add'
     }
   },
@@ -210,13 +222,13 @@ export default {
         this.$refs.form.resetFields()
         this.$refs.form.clearValidate()
         this.form = {
-          pid: '0',
           name: '',
+          type: [],
+          genres: [],
           description: '',
           icon: '',
-          sort: '0'
+          sort: 0
         }
-        this.pid = []
       }
     }
   },
@@ -242,19 +254,13 @@ export default {
       if (form && form._id) {
         // 请求分类详情
         this.form = JSON.parse(JSON.stringify(form))
-        this.pid = form.pid
       }
-    },
-    // 父id下拉框选择
-    handleChange(e) {
-      this.form.pid = e
     },
     onSubmit(formName) {
       const _this = this
       _this.$refs[formName].validate(valid => {
         if (valid) {
           if (_this.form._id) {
-            _this.form.pid ? _this.form.pid : '0'
             videoClassApi.updateItem(_this.form).then(res => {
               this.$message.success(res.msg)
               // 重置表单
@@ -267,7 +273,6 @@ export default {
               this.$message.error(err || '编辑失败!')
             })
           } else {
-            _this.form.pid ? _this.form.pid : '0'
             videoClassApi.addItem(_this.form).then(res => {
               this.$message.success(res.msg)
               // 重置表单

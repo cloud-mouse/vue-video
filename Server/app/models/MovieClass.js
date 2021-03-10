@@ -1,22 +1,27 @@
 const mongoose = require('../db/mongodb')
 
 const MovieClassSchema = new mongoose.Schema({
-  icon: String,
   // 名称
   name:{
     type: String,
     required: true
   },
-  description: String,
-  // 父id 0表示顶级
-  pid: {
-    type: String,
-    default: '0'
+  // 图标
+  icon: String,
+  // 分类
+  type: {
+    type: Array
   },
+  // 类型
+  genres: {
+    type: Array
+  },
+  // 描述
+  description: String,
   // 排序
   sort: {
-    type: String,
-    default: '0'
+    type: Number,
+    default: 0
   },
   // 创建时间
   createTime: {

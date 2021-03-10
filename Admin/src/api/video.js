@@ -14,7 +14,10 @@ export const videoClassApi = {
     return request({
       url: '/admin-api/movieClass',
       method: 'post',
-      data
+      data,
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8'
+      }
     })
   },
   // 修改
