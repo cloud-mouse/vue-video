@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 const multer = require('multer')
 const { ENV_CONFIG } = require('../../config')
-const { Gallery, GalleryClass } = require('../models/Gallery')
+const { Gallery } = require('../models/Gallery')
 
 const checkToken = require('../middleware/checkToken')
 

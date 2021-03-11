@@ -1,7 +1,7 @@
 const JWT_SECRET = 'ahdagdjhagfjhafjhsdbgfhgfisaidfhisadhfuiasdyiuyh'
 const WEB_JWT_SECRET = 'ahdagdjhagfjhafjhsdbgfhgfisaidfhisadhfuiasdyiuyh'
 
-let ENV_CONFIG
+let ENV_CONFIG 
 if (process.env.NODE_ENV === 'production') {
   ENV_CONFIG = {
     URL: 'http://movie.zhanghaoblog.top'

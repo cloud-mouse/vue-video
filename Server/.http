@@ -1,4 +1,4 @@
-@url=http://localhost:3001
+@url=http://212.129.244.20:3001
 
 ### 用户注册
 POST {{url}}/admin-api/admin/register

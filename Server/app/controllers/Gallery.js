@@ -33,7 +33,7 @@ const getGallery = async (req, res, next) => {
 // 新增图片
 const createGallery = async (req, res, next) => {
   // 文件路径
-  var imageSrc = `${ENV_CONFIG.URL}/${req.file.path}`
+  var imageSrc = `http://movie.zhanghaoblog.top/${req.file.path}`
   try {
     let result = await Gallery.create({
       name: req.file.filename,
