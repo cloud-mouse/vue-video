@@ -41,34 +41,36 @@
         <van-tab v-for="item in indexData" :key="item._id" :title="item.name">
           <div
             v-if="item.movieList && item.movieList.length"
-            class="video-content"
+            class="movie-content"
           >
             <div
               v-for="(block, index) in item.movieList"
               :key="index"
               class="block-list"
             >
-              <div class="title">{{ block.name }}</div>
-              <div class="video-list">
-                <div
-                  v-for="mv in block.list"
-                  :key="mv._id"
-                  class="video-item"
-                  @click="toDetail(mv._id)"
-                >
-                  <img :src="mv.cover" alt="">
-                  <div class="mv-info">
-                    <div class="mv-name">{{ mv.name || '...' }}</div>
+              <template v-if="block.list.length">
+                <div class="title">{{ block.name }}</div>
+                <div class="movie-list">
+                  <div
+                    v-for="mv in block.list"
+                    :key="mv._id"
+                    class="movie-item"
+                    @click="toDetail(mv._id)"
+                  >
+                    <img :src="mv.cover" alt="">
+                    <div class="mv-info">
+                      <div class="mv-name">{{ mv.name || '...' }}</div>
+                    </div>
+                    <!-- <div class="episodes">
+                      {{ mv.isOver === 1 ? '全' : '更新至'
+                      }}{{ mv.episodes || 0 }}集
+                    </div> -->
                   </div>
-                  <!-- <div class="episodes">
-                    {{ mv.isOver === 1 ? '全' : '更新至'
-                    }}{{ mv.episodes || 0 }}集
-                  </div> -->
+                  <div v-if="!block.list.length" class="no-data">
+                    暂无内容
+                  </div>
                 </div>
-                <div v-if="!block.list.length" class="no-data">
-                  暂无内容
-                </div>
-              </div>
+              </template>
             </div>
           </div>
           <div v-else class="no-data">
@@ -107,7 +109,7 @@ export default {
         this.slider = res.data.slider
       })
     },
-    // 查看小说详情
+    // 查看详情
     toDetail(id) {
       this.$router.push({ path: `/movie/detail`, query: { id }})
     },
@@ -140,7 +142,7 @@ export default {
       }
     }
   }
-  .video-content {
+  .movie-content {
     background: #fff;
     padding: 10px;
     .block-list {
@@ -149,11 +151,12 @@ export default {
         padding: 15px 0;
         font-size: 14px;
       }
-      .video-list {
+      .movie-list {
         display: flex;
         justify-content: space-between;
+        flex-wrap: wrap;
       }
-      .video-item {
+      .movie-item {
         width: 32%;
         box-shadow: 0 0 10px 2px #f5f5f5;
         border-radius: 8px;

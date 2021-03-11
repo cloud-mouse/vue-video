@@ -1,6 +1,30 @@
 <template>
   <div class="video-list main-content">
     <div class="screen-box">
+      <div class="screen-item">
+        <el-input
+          v-model="keywords"
+          size="small"
+          placeholder="输入关键词"
+          clearable
+          style="width:220px"
+          @keyup.enter.native="fetchData"
+        />
+        <el-select
+          v-model="movie_class"
+          size="small"
+          clearable
+          placeholder="请选择影视分类"
+        >
+          <el-option
+            v-for="item in videoClassList"
+            :key="item._id"
+            :label="item.name"
+            :value="item._id"
+          />
+        </el-select>
+        <el-button size="small" icon="el-icon-search" type="primary" @click.native="fetchData">搜索</el-button>
+      </div>
       <div class="operation">
         <el-button
           size="small"
@@ -267,6 +291,9 @@ export default {
       currentPage: 1,
       total: 0,
       currentClass: {},
+      movie_class: '',
+      movie_type: '',
+      movie_genres: '',
       rules: {
         name: [{ required: true, trigger: 'blur', message: '请填写影视名称' }],
         movie_class: [
@@ -319,7 +346,11 @@ export default {
       videoApi
         .getList({
           pageSize: this.pageSize,
-          currentPage: this.currentPage
+          currentPage: this.currentPage,
+          keywords: this.keywords,
+          movie_class: this.movie_class,
+          movie_type: this.movie_type,
+          movie_genres: this.movie_genres
         })
         .then(res => {
           this.videoList = res.data.list
@@ -470,7 +501,6 @@ export default {
     }
     .operation {
       display: block;
-      width: 100%;
       text-align: right;
     }
   }

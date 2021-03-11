@@ -64,6 +64,7 @@
       closeable
       round
       position="bottom"
+      style="height: 40%"
       @close="showAllEpisodes = false"
     >
       <div class="episodes-all">

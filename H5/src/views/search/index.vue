@@ -25,7 +25,28 @@
       </div>
 
       <div v-if="showResult" class="search-result">
-        搜索结果
+        <van-pull-refresh v-model="refreshing" @refresh="onRefresh">
+          <van-list
+            v-model="loading"
+            :finished="finished"
+            finished-text="没有更多了"
+            @load="onLoad"
+          >
+            <div v-if="movieList.length > 0" class="movie-list">
+              <div
+                v-for="item in movieList"
+                :key="item._id"
+                class="movie-item"
+                @click="toDetail(item._id)"
+              >
+                <img :src="item.cover" alt="">
+                <div class="item-info">
+                  <div class="item-name">{{ item.name || '...' }}</div>
+                </div>
+              </div>
+            </div>
+          </van-list>
+        </van-pull-refresh>
       </div>
     </div>
   </div>
@@ -37,9 +58,25 @@ export default {
   name: 'Search',
   data() {
     return {
+      loading: false,
+      finished: false,
+      refreshing: false,
+
       keywords: '',
       searchHistory: [],
-      showResult: false
+      showResult: false,
+      movieList: [], // 视频列表
+      currentPage: 1,
+      pageSize: 10
+    }
+  },
+  watch: {
+    keywords(newValue, oldValue) {
+        if (newValue) {
+          this.showResult = true
+        } else {
+          this.showResult = false
+        }
     }
   },
   created() {
@@ -47,6 +84,24 @@ export default {
     this.searchHistory = val.split(',')
   },
   methods: {
+    onLoad() {
+      setTimeout(() => {
+        if (this.refreshing) {
+          this.currentPage = 1
+          this.movieList = []
+          this.refreshing = false
+        }
+        this.getList()
+      }, 2000)
+    },
+    onRefresh() {
+      // 清空列表数据
+      this.finished = false
+      // 重新加载数据
+      // 将 loading 设置为 true，表示处于加载状态
+      this.loading = true
+      this.onLoad()
+    },
     setKeywords(item) {
       this.keywords = item
     },
@@ -55,13 +110,28 @@ export default {
         this.searchHistory.push(this.keywords)
       }
       localStorage.setItem('search-history', this.searchHistory.join(','))
+      this.showResult = true
+    },
+    getList() {
       movieApi
-        .getItem({
+        .getMovie({
+          currentPage: this.currentPage,
+          pageSize: this.pageSize,
           keywords: this.keywords
         })
         .then(res => {
-          console.log(res)
-          this.movieList = res.data.list
+          this.loading = false
+          if (this.currentPage === 1) {
+            this.movieList = res.data.list
+            this.currentPage += 1
+          } else {
+            if (res.data.list.length !== 0) {
+              this.movieList = this.movieList.concat(res.data.list)
+              this.currentPage += 1
+            } else {
+              this.finished = true
+            }
+          }
         })
     }
   }
@@ -88,6 +158,54 @@ export default {
           border: 1px solid #f3f3f3;
           border-radius: 10px;
           margin-right: 12px;
+        }
+      }
+    }
+    .search-result {
+      .movie-list {
+        display: flex;
+        flex-wrap: wrap;
+      }
+      .movie-item {
+        width: 100px;
+        box-shadow: 0 0 10px 2px #f5f5f5;
+        border-radius: 8px;
+        margin-bottom: 10px;
+        font-size: 14px;
+        overflow: hidden;
+        position: relative;
+        margin-right: 17px;
+        display: inline-block;
+        &:nth-of-type(3n) {
+          margin-right: 0;
+        }
+        img {
+          width: 100%;
+          height: 120px;
+          display: block;
+        }
+        .item-info {
+          .item-name {
+            font-size: 14px;
+            padding: 0 5px;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 1;
+            overflow: hidden;
+            height: 30px;
+            line-height: 30px;
+          }
+        }
+        .episodes {
+          position: absolute;
+          bottom: 30px;
+          right: 0;
+          padding: 2px;
+          color: #fff;
+          font-size: 12px;
+          background: rgba(0, 0, 0, 0.26);
+          width: 100%;
+          text-align: right;
         }
       }
     }

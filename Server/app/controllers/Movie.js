@@ -23,14 +23,21 @@ const updateOne = async (req, res, next) => {
 }
 // 获取列表
 const getList = async (req, res, next) => {
-  let { id, keywords, currentPage, pageSize } = req.query
+  let { id, keywords, currentPage, pageSize, movie_class, movie_type, movie_genres } = req.query
   const reg = new RegExp(keywords, 'i') //不区分大小写
+  const regtype = new RegExp(movie_type, 'i') //不区分大小写
+  const reggenres = new RegExp(movie_genres, 'i') //不区分大小写
   let query = {
-    $or: [{ name: { $regex: reg } }],
+    $or: [{
+      name: { $regex: reg },
+      movie_type: { $regex: regtype },
+      movie_genres: { $regex: reggenres }
+    }],
   }
+  if(movie_class) query.movie_class = movie_class  // 设置所选分类
   if (!id) {
     let videos = await Movie.find(query).skip((currentPage - 1) * pageSize).populate('movie_class').sort({ sort: -1 }).limit(pageSize * 1).lean() // 查询顶级
-    const count = await Movie.countDocuments()  // 计数
+    const count = await Movie.countDocuments(query)  // 计数
     res.send({ code: 200, msg: '获取成功', data: { list: videos, count: count } })
   } else {
     let video = await Movie.findById(id).populate('movie_class')
