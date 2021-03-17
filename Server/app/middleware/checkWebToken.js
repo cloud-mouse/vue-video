@@ -14,9 +14,9 @@ let checkToken = async (req, res, next) => {
   // 解密 token 获取对应的 id
   jwt.verify(token, WEB_JWT_SECRET, async(err, decode) => {
     if (err) return res.send({ code: 401, msg: err })
-    let { user_id } = decode
+    let { id } = decode
     if (!id) return res.send({ code: 401, msg: 'token无效' })
-    req.user_id = user_id
+    req.user_id = id
     next()
   })
 

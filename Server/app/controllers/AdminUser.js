@@ -23,8 +23,10 @@ module.exports = {
     const { username, password } = req.body
     const user = await AdminUser.findOne({ username: username })
     if (user) {
-      res.send({ code: 422, msg: '用户已注册' })
-      return
+      return res.send({ code: 422, msg: '用户已注册' })
+    }
+    if(password.length<6) {
+      return res.send({code: 422, msg: '密码长度最低6位'})
     }
     try {
       const result = await AdminUser.create(req.body)
@@ -39,9 +41,12 @@ module.exports = {
   // 登录
   async login(req, res, next) {
     const { username, password } = req.body
-    const user = await AdminUser.findOne({ username: username }).select('password')
+    const user = await AdminUser.findOne({ username: username }).select('password').select('status')
     if (!user) {
       return res.send({ code: 422, msg: '用户不存在' })
+    }
+    if(user.status !== '1') {
+      return res.send({ code: 422, msg: '用户已被禁用，请联系管理员'})
     }
     // bcrypt.compareSync 解密匹配，返回 boolean 值
     const isPasswordValid = bcrypt.compareSync(password, user.password)
@@ -57,15 +62,21 @@ module.exports = {
   },
   // 获取管路员列表
   async getList(req, res, next) {
-    let { currentPage, pageSize, id } = req.query
+    let { keywords, currentPage, pageSize, id } = req.query
+    const reg = new RegExp(keywords, 'i') //不区分大小写
+    let query = {
+      $or: [{
+        username: { $regex: reg }
+      }]
+    }
     let user,count = 0
     if (id) {
       user = await AdminUser.findById({ _id: id }).populate('role')
       if (!user) return res.send({ code: 422, msg: '用户信息不存在' })
       res.send({ code: 200, msg: '获取成功', data: user })
     } else {
-      user = await AdminUser.find().skip((currentPage - 1) * pageSize).sort({sort:-1}).limit(pageSize * 1).lean().populate('role')
-      count = await AdminUser.countDocuments()  // 计数
+      user = await AdminUser.find(query).skip((currentPage - 1) * pageSize).sort({sort:-1}).limit(pageSize * 1).lean().populate('role')
+      count = await AdminUser.countDocuments(query)  // 计数
       if (!user) return res.send({ code: 422, msg: '获取失败' })
       res.send({ code: 200, msg: '获取成功', data: {list:user, count: count} })
     }
@@ -81,6 +92,7 @@ module.exports = {
       res.send({ code: 422, msg: '请选择用户' })
     }
   },
+  // 删除
   async updateOne(req, res, next) {
     let body = req.body
     try {

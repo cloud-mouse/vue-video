@@ -1,5 +1,5 @@
-import { login, logout, getInfo, checkLogin, loginDev } from '@/api/user'
-import { setStatus, removeStatus } from '@/utils/auth'
+import { login, register, getInfo } from '@/api/user'
+import { getToken, removeToken, setToken, setUserId, removeUserId } from '@/utils/auth'
 import { resetRouter } from '@/router'
 
 const getDefaultState = () => {
@@ -7,7 +7,7 @@ const getDefaultState = () => {
     name: '',
     avatar: '',
     userInfo: {},
-    isLogin: false
+    token: getToken()
   }
 }
 
@@ -26,34 +26,38 @@ const mutations = {
   SET_USERINFO: (state, userInfo) => {
     state.userInfo = userInfo
   },
-  SET_LOGIN_STATUS: (state, status) => {
-    state.isLogin = status
+  SET_LOGIN_TOKEN: (state, status) => {
+    state.token = status
   }
 }
 
 const actions = {
-  // Wechat login
-  login({ commit }) {
+  // 用户登录
+  login({ commit }, data) {
     return new Promise((resolve, reject) => {
-      login().then(response => {
-        window.location.href = response.data
-        resolve()
+      const { account, password } = data
+      login({ account, password }).then(response => {
+        const { token, user_id } = response.data
+        setToken(token)
+        commit('SET_LOGIN_TOKEN', token)
+        setUserId(user_id)
+        resolve(response)
       }).catch(error => {
         reject(error)
       })
     })
   },
-  // General browser debugging login
-  loginDev({ commit }) {
+  // 用户注册
+  register({ commit }, data) {
     return new Promise((resolve, reject) => {
-      loginDev().then(response => {
-        resolve()
+      const { account, password } = data
+      register({ account, password }).then(response => {
+        resolve(response)
       }).catch(error => {
         reject(error)
       })
     })
   },
-
   // get user info
   getInfo({ commit, state }) {
     return new Promise((resolve, reject) => {
@@ -63,9 +67,9 @@ const actions = {
           location.reload()
           reject('验证失败，请重新登录！')
         }
-        const { nickname, headimgurl } = data
-        commit('SET_NAME', nickname)
-        commit('SET_AVATAR', headimgurl)
+        const { nickName, avatar } = data
+        commit('SET_NAME', nickName)
+        commit('SET_AVATAR', avatar)
         commit('SET_USERINFO', data)
         resolve(data)
       }).catch(error => {
@@ -73,43 +77,22 @@ const actions = {
       })
     })
   },
-
   // logout
   logout({ commit, state }) {
     return new Promise((resolve, reject) => {
-      logout(state.token).then(() => {
-        resetRouter()
-        removeStatus()
-        commit('RESET_STATE')
-        resolve()
-      }).catch(error => {
-        reject(error)
-      })
+      resetRouter()
+      removeToken()
+      removeUserId()
+      commit('RESET_STATE')
+      resolve()
     })
   },
-
-  // check login
-  checkLogin({ commit, state }) {
-    return new Promise((resolve, reject) => {
-      checkLogin().then((response) => {
-        if (response.code === 402) {
-          resolve(false)
-        } else {
-          setStatus(true)
-          commit('SET_LOGIN_STATUS', true)
-          resolve(true)
-        }
-      }).catch(error => {
-        reject(error)
-      })
-    })
-  },
-
   // remove token
   resetToken({ commit }) {
     return new Promise(resolve => {
-      commit('SET_LOGIN_STATUS', '')
-      removeStatus()
+      commit('SET_LOGIN_TOKEN', '')
+      removeToken()
+      removeUserId()
       commit('RESET_STATE')
       resolve()
     })

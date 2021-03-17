@@ -83,24 +83,14 @@
           <el-input v-model="form.name" :disabled="dialogType == 'detail'" />
         </el-form-item>
         <el-form-item label="广告位图片" prop="path">
-          <!-- <el-upload
-            class="uploader"
-            :action="uploadUrl"
-            :headers="{ Authorization: `Basic ${token}` }"
-            :show-file-list="false"
-            :disabled="dialogType == 'detail'"
-            :on-success="handleAvatarSuccess"
-            :before-upload="beforeAvatarUpload"
-          >
-            <img v-if="form.path" :src="form.path" class="cloud_img">
-            <i v-else class="el-icon-plus uploader-icon" />
-          </el-upload> -->
           <img-upload
             :disabled="dialogType=='detail'"
             :img-data="form.path"
             :pic-max="1"
             @chooseImg="imageChoose"
           />
+          <el-input v-model="form.path" placeholder="您还可以输入图片url，这将不会录入图库资源" clearable />
+
         </el-form-item>
         <el-form-item label="排序">
           <el-input v-model="form.sort" :disabled="dialogType == 'detail'" />

@@ -39,7 +39,7 @@ router.beforeEach(async(to, from, next) => {
             if (from.path !== '/login') {
               next({ ...to, replace: true }) // hack方法 确保addRoutes已完成
             } else {
-              next({ path: store.getters.addRouters[0].path, replace: true }) // hack方法 确保addRoutes已完成
+              next({ path: '/', replace: true }) // hack方法 确保addRoutes已完成
             }
           })
         }).catch((err) => {

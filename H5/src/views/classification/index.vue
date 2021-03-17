@@ -111,7 +111,7 @@ export default {
           this.currentPage = 1
           this.movieList = []
           this.refreshing = false
-        } 
+        }
         this.getList()
       }, 2000)
     },
@@ -146,12 +146,12 @@ export default {
           this.loading = false
           if (this.currentPage === 1) {
             this.movieList = res.data.list
-            this.currentPage+=1
+            this.currentPage += 1
           } else {
-            if(res.data.list.length !== 0) {
+            if (res.data.list.length !== 0) {
               this.movieList = this.movieList.concat(res.data.list)
-              this.currentPage+=1
-            }else {
+              this.currentPage += 1
+            } else {
               this.finished = true
             }
           }

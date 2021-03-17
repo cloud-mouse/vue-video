@@ -7,7 +7,7 @@
     <div class="right-menu">
       <el-dropdown class="avatar-container" trigger="click">
         <div class="avatar-wrapper">
-          <img v-if="adminInfo.logo" :src="adminInfo.logo" class="user-avatar">
+          <img v-if="adminInfo.avatar" :src="adminInfo.avatar" class="user-avatar">
           <img v-else src="@/assets/images/avator.jpg" class="user-avatar">
           <span>{{ adminInfo.username }}</span>
           <i class="el-icon-caret-bottom" />

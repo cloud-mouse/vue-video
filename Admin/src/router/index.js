@@ -20,6 +20,20 @@ export const constantRoutes = [
     }]
   },
   {
+    path: '/member',
+    component: Layout,
+    alwaysShow: true,
+    redirect: '/member/memberList',
+    meta: { title: '会员管理', icon: 'member' },
+    children: [{
+      path: 'memberList',
+      name: 'MemberList',
+      component: () => import('@/views/memberCenter/member/list'),
+      alwaysShow: false,
+      meta: { title: '会员列表', noCache: false }
+    }]
+  },
+  {
     path: '/video',
     name: 'Video',
     component: Layout,

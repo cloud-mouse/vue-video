@@ -13,7 +13,12 @@ const constantRoutes = [
     path: '/user',
     name: 'User',
     component: () => import('@/views/user/index'),
-    meta: { title: '个人中心', showTabbar: true, keepAlive: true }
+    meta: { title: '个人中心', showTabbar: true, keepAlive: false }
+  }, {
+    path: '/userInfo',
+    name: 'UserInfo',
+    component: () => import('@/views/user/userInfo'),
+    meta: { title: '用户详情' }
   }, {
     path: '/classify',
     name: 'Classify',
@@ -54,6 +59,12 @@ const constantRoutes = [
     name: 'Register',
     component: () => import('@/views/authorization/register'),
     meta: { title: '用户注册' }
+  },
+  {
+    path: '/about',
+    name: 'About',
+    component: () => import('@/views/user/About'),
+    meta: { title: '关于我' }
   },
   {
     path: '/404',

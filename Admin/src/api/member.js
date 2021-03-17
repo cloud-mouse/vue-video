@@ -1,11 +1,11 @@
 import request from '@/utils/request'
 
 export const member = {
-  userList(data) {
+  userList(params) {
     return request({
-      url: '/user/userList',
-      method: 'post',
-      data
+      url: '/admin-api/member/',
+      method: 'get',
+      params
     })
   }
 }

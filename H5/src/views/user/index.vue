@@ -1,50 +1,26 @@
 <template>
   <div class="user-view">
     <div class="top-info">
-      <img class="user-avator" :src="avatar" alt="">
-      <div v-if="userInfo.username" class="accout-info">
-        <p class="user-name">{{ name }}</p>
-        <p v-if="userInfo.phone" class="user-phone">
-          账号：{{ userInfo.phone }}
+      <img class="user-avator" :src="avatar || require('../../assets/images/avatar.png')" alt="">
+      <div v-if="userInfo.account" class="accout-info">
+        <p class="user-name" @click="toUserInfo">{{ name || '完善信息 >' }}</p>
+        <p v-if="userInfo.account" class="user-account">
+          账号：{{ userInfo.account }}
         </p>
       </div>
-      <div v-else class="accout-info">
-        登录
+      <div v-else class="accout-info" @click="toLogin">
+        去登录
       </div>
     </div>
     <div class="content-view">
-      <!-- <div class="order-cell">
-        <div class="order-cell-title">
-          <div class="left-text">我的订单</div>
-          <div class="right-text" @click="toOrderList(0)">
-            <span>查看全部订单</span>
-            <svg-icon icon-class="right-arrow" />
-          </div>
-        </div>
-        <div class="cell-item-box">
-          <div class="cell-item" @click="toOrderList(1)">
-            <svg-icon icon-class="wait-confirm" />
-            <p>待支付</p>
-          </div>
-          <div class="cell-item" @click="toOrderList(2)">
-            <svg-icon icon-class="wait-defray" />
-            <p>待发货</p>
-          </div>
-          <div class="cell-item" @click="toOrderList(3)">
-            <svg-icon icon-class="wait-receive" />
-            <p>待收货</p>
-          </div>
-          <div class="cell-item" @click="toOrderList(4)">
-            <svg-icon icon-class="isok" />
-            <p>已完成</p>
-          </div>
-        </div>
-      </div> -->
-
       <div class="cell-box">
         <!-- <cell-item icon-name="site-icon" left-text="地址管理" path="/addressList" /> -->
         <cell-item left-text="关于我们" path="/about" />
       </div>
+    </div>
+
+    <div class="logout" v-if="userInfo.account">
+      <span @click="logout">退出登录</span>
     </div>
   </div>
 </template>
@@ -65,14 +41,22 @@ export default {
     //   return this.data
     // }
   },
-  created() {},
+  created() {
+    this.getUserInfo()
+  },
   methods: {
-    toOrderList(type) {
-      if (type) {
-        this.$router.push({ path: `/orderList?current_type=${type}` })
-      } else {
-        this.$router.push({ path: '/orderList' })
-      }
+    getUserInfo() {
+      this.$store.dispatch('user/getInfo')
+    },
+    toUserInfo() {
+      this.$router.push({ path: '/userInfo' })
+    },
+    logout() {
+      this.$store.dispatch('user/logout')
+    },
+    // 去登录
+    toLogin() {
+      this.$router.push({ path: '/login' })
     }
   }
 }
@@ -101,9 +85,9 @@ export default {
       p {
         margin: 0;
         padding: 5px 0;
-        color: #fff;
+        color: #333;
       }
-      p.user-phone {
+      p.user-account {
         color: #999;
         font-size: 12px;
       }
@@ -153,6 +137,12 @@ export default {
         }
       }
     }
+  }
+  .logout{
+    padding: 20px;
+    text-align: center;
+    font-size: 14px;
+    color: #999;
   }
   .cell-box {
     padding: 10px;

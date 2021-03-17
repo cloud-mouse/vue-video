@@ -72,11 +72,11 @@ export default {
   },
   watch: {
     keywords(newValue, oldValue) {
-        if (newValue) {
-          this.showResult = true
-        } else {
-          this.showResult = false
-        }
+      if (newValue) {
+        this.showResult = true
+      } else {
+        this.showResult = false
+      }
     }
   },
   created() {

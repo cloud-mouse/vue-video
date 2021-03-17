@@ -113,6 +113,7 @@
             :pic-max="1"
             @chooseImg="imageChoose"
           />
+          <el-input v-model="form.icon" placeholder="您还可以输入分类图标url，这将不会录入图库资源" clearable />
         </el-form-item>
         <el-form-item label="种类(type)" prop="type">
           <el-select
@@ -366,34 +367,6 @@ export default {
   .class_icon{
     display: inline-block;
     vertical-align: middle;
-  }
-}
-</style>
-
-<style lang="scss">
-.logo-uploader {
-  .el-upload {
-    border: 1px dashed #d9d9d9;
-    border-radius: 6px;
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-  }
-  .el-upload:hover {
-    border-color: #409eff;
-  }
-  .logo-uploader-icon {
-    font-size: 28px;
-    color: #8c939d;
-    width: 150px;
-    height: 150px;
-    line-height: 150px;
-    text-align: center;
-  }
-  .logo {
-    width: 150px;
-    height: 150px;
-    display: block;
   }
 }
 </style>

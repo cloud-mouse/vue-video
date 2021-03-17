@@ -3,8 +3,8 @@ const mongoose = require('../db/mongodb')
 const bcrypt = require('bcryptjs')
 
 const UserSchema = new mongoose.Schema({
-  // 分类名
-  username:{
+  // 登录账号
+  account:{
     type: String,
     unique: true,
     required: true
@@ -19,9 +19,6 @@ const UserSchema = new mongoose.Schema({
   avatar: {
     type: String
   },
-  phone: {
-    type: String
-  },
   // 真实姓名
   realName: {
     type: String
@@ -30,7 +27,7 @@ const UserSchema = new mongoose.Schema({
   nickName: {
     type: String
   },
-   // 状态
+  // 状态
   status:{
     type: String,
     default: '1'

@@ -2,7 +2,7 @@ import request from '@/utils/request'
 
 export function register(data) {
   return request({
-    url: '/user/register',
+    url: '/web-api/user/register',
     method: 'post',
     data
   })
@@ -10,15 +10,7 @@ export function register(data) {
 
 export function login(data) {
   return request({
-    url: '/user/login',
-    method: 'post',
-    data
-  })
-}
-
-export function loginDev(data) {
-  return request({
-    url: '/user/loginDev',
+    url: '/web-api/user/login',
     method: 'post',
     data
   })
@@ -26,23 +18,16 @@ export function loginDev(data) {
 
 export function getInfo(params) {
   return request({
-    url: '/user/info',
+    url: '/web-api/user/info',
     method: 'get',
     params
   })
 }
 
-export function logout() {
+export function updateUser(data) {
   return request({
-    url: '/user/logout',
-    method: 'post'
-  })
-}
-
-export function checkLogin(data) {
-  return request({
-    url: '/user/checkLogin',
-    method: 'post',
+    url: '/web-api/user/info',
+    method: 'patch',
     data
   })
 }

@@ -37,24 +37,37 @@
           width="100"
         >
           <template slot-scope="scope">
-            <img :src="scope.row.headimgurl" alt="" width="60" height="60">
+            <img :src="scope.row.avatar" alt="" width="60" height="60">
           </template>
         </el-table-column>
         <el-table-column
-          prop="nickname"
+          prop="nickName"
           label="会员昵称"
           align="center"
         />
         <el-table-column
-          prop="phone"
-          label="手机号"
+          prop="account"
+          label="账号"
           align="center"
         />
         <el-table-column
-          prop="created_at"
-          label="注册时间"
+          prop="createTime"
+          label="创建时间"
           align="center"
-        />
+        >
+          <template slot-scope="scope">
+            {{ scope.row.createTime | timeFormat }}
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="updateTime"
+          label="更新时间"
+          align="center"
+        >
+          <template slot-scope="scope">
+            {{ scope.row.updateTime | timeFormat }}
+          </template>
+        </el-table-column>
         <el-table-column
           fixed="right"
           label="操作"
@@ -88,29 +101,20 @@
       <el-dialog v-dialogDrag center :title="dialogType=='add'? '新增会员': dialogType=='edit'? '编辑信息': '会员详情'" :visible.sync="dialogFormVisible">
         <el-form ref="memberForm" :model="memberForm" label-width="100px" label-position="left" size="small">
           <el-form-item label="会员昵称">
-            <el-input v-model="memberForm.nickname " :disabled="dialogType=='detail'" />
+            <el-input v-model="memberForm.nickName " :disabled="dialogType=='detail'" />
           </el-form-item>
           <el-form-item label="真实姓名">
-            <el-input v-model="memberForm.name " :disabled="dialogType=='detail'" />
+            <el-input v-model="memberForm.realName " :disabled="dialogType=='detail'" />
           </el-form-item>
-          <el-form-item label="手机号">
-            <el-input v-model="memberForm.phone " :disabled="dialogType=='detail'" />
+          <el-form-item label="登录账号">
+            <el-input v-model="memberForm.account " :disabled="dialogType=='detail'" />
           </el-form-item>
           <el-form-item label="会员头像">
             <img-upload
               :disabled="dialogType=='detail'"
-              :img-data="memberForm.headimgurl"
+              :img-data="memberForm.avatar"
               :pic-max="1"
               @chooseImg="imageChoose"
-            />
-          </el-form-item>
-          <el-form-item label="生日">
-            <el-date-picker
-              v-model="memberForm.birthday"
-              type="date"
-              format="yyyy-MM-dd"
-              :disabled="dialogType=='detail'"
-              placeholder="选择日期"
             />
           </el-form-item>
           <el-form-item>
@@ -126,8 +130,23 @@
 
 <script>
 import { member } from '@/api/member'
+import { formatTime } from '@/utils'
+import ImgUpload from '@/components/ImgUpload'
 export default {
   components: {
+    ImgUpload
+  },
+  filters: {
+    timeFormat(time) {
+      return formatTime(new Date(time))
+    },
+    statusFilter(status) {
+      const statusMap = {
+        1: 'success',
+        0: 'danger'
+      }
+      return statusMap[status]
+    }
   },
   data() {
     return {
@@ -137,15 +156,14 @@ export default {
       multipleSelection: [],
       dialogFormVisible: false,
       memberForm: {
-        name: '',
-        nickname: '',
-        phone: '',
-        birthday: '',
-        headimgurl: ''
+        realName: '',
+        nickName: '',
+        account: '',
+        avatar: ''
       },
       rules: {
-        nickname: [
-          { required: true, message: '请填写会员昵称', trigger: 'blur' }
+        nickName: [
+          { required: true, message: '请填写昵称', trigger: 'blur' }
         ]
       },
       pageSize: 5,
@@ -172,7 +190,7 @@ export default {
         currentPage: this.currentPage
       }).then(res => {
         this.loading = false
-        this.memberList = res.data.data
+        this.memberList = res.data.list
         this.total = res.data.count
       }).catch(() => {
         this.loading = false
@@ -181,14 +199,14 @@ export default {
     showDialog(type, form) {
       this.dialogType = type
       this.dialogFormVisible = true
-      if (form && form.id) {
+      if (form && form._id) {
         this.memberForm = form
       }
     },
     // 图片上传模块
     imageChoose(img) {
-      this.memberForm.headimgurl = img
-      this.$refs.shopForm.validateField('headimgurl')
+      this.memberForm.avatar = img
+      this.$refs.shopForm.validateField('avatar')
     },
     handleCurrentChange(val) {
       this.currentPage = val

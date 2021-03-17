@@ -1,15 +1,28 @@
 // import Cookies from 'js-cookie'
 
-const isLogin = 'is_login'
+const TokenKey = 'movie-token'
+const UserKey = 'movie-user-id'
 
-export function getStatus() {
-  return localStorage.getItem(isLogin)
+export function getToken() {
+  return localStorage.getItem(TokenKey)
 }
 
-export function setStatus(status) {
-  return localStorage.setItem(isLogin, status)
+export function setToken(token) {
+  return localStorage.setItem(TokenKey, token)
 }
 
-export function removeStatus() {
-  return localStorage.removeItem(isLogin)
+export function removeToken() {
+  return localStorage.removeItem(TokenKey)
+}
+
+export function getUserId() {
+  return localStorage.getItem(UserKey)
+}
+
+export function setUserId(id) {
+  return localStorage.setItem(UserKey, id)
+}
+
+export function removeUserId() {
+  return localStorage.removeItem(UserKey)
 }

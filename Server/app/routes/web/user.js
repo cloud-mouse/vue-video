@@ -8,6 +8,7 @@ router.post('/register', UserController.register);
 router.post('/login', UserController.login);
 // 获取用户信息
 router.get('/info', checkWebToken, UserController.userInfo);
+router.patch('/info', checkWebToken, UserController.updateOne);
 
 
 module.exports = router;

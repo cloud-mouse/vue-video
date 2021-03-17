@@ -1,5 +1,21 @@
 <template>
   <div class="about">
-    <h1>关于页面</h1>
+    <div v-html="about" />
   </div>
 </template>
+
+<script>
+export default {
+  data() {
+    return {
+      about: '关于我'
+    }
+  }
+}
+</script>
+
+<style lang="scss">
+  .about{
+    padding: 20px;
+  }
+</style>

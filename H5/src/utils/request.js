@@ -1,6 +1,7 @@
 import axios from 'axios'
 import store from '@/store'
 import { Toast } from 'vant'
+import { getToken } from '@/utils/auth'
 
 // 创建axios实例
 const service = axios.create({
@@ -14,10 +15,10 @@ service.interceptors.request.use(
   config => {
     // 在发出请求前做点什么
     if (store.getters.token) {
-    // 让每个请求携带令牌
-    // ['X-Token']是自定义头密钥
-    // 请根据实际情况修改
-      // config.headers['X-Token'] = getToken()
+      // 使每个请求头携带token
+      // ['Authorization'] 是header请求头中的key
+      // 请根据实际情况修改
+      config.headers.Authorization = `Bearer ${getToken()}`
     }
     return config
   },

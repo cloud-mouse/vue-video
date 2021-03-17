@@ -7,8 +7,8 @@ const jwt = require('jsonwebtoken')
 module.exports = {
   // 用户注册
   async register(req, res, next) {
-    const { username, password } = req.body
-    const user = await User.findOne({ username: username })
+    const { account, password } = req.body
+    const user = await User.findOne({ account: account })
     if (user) {
       res.send({ code: 422, msg: '用户已注册' })
       return
@@ -25,8 +25,8 @@ module.exports = {
   },
   // 登录
   async login(req, res, next) {
-    const { username, password } = req.body
-    const user = await User.findOne({ username: username }).select('password')
+    const { account, password } = req.body
+    const user = await User.findOne({ account: account }).select('password')
     if (!user) {
       return res.send({ code: 422, msg: '用户不存在' })
     }
@@ -50,6 +50,38 @@ module.exports = {
       res.send({ code: 200, msg: '修改成功', data: result })
     } catch (error) {
       res.send({ code: 422, msg: error })
+    }
+  },
+   // 获取用户列表
+   async getList(req, res, next) {
+    let { keywords, currentPage, pageSize, id } = req.query
+    const reg = new RegExp(keywords, 'i') //不区分大小写
+    let query = {
+      $or: [{
+        account: { $regex: reg }
+      }]
+    }
+    let user,count = 0
+    if (id) {
+      user = await User.findById({ _id: id })
+      if (!user) return res.send({ code: 422, msg: '用户信息不存在' })
+      res.send({ code: 200, msg: '获取成功', data: user })
+    } else {
+      user = await User.find(query).skip((currentPage - 1) * pageSize).sort({sort:-1}).limit(pageSize * 1).lean().populate('role')
+      count = await User.countDocuments(query)  // 计数
+      if (!user) return res.send({ code: 422, msg: '获取失败' })
+      res.send({ code: 200, msg: '获取成功', data: {list:user, count: count} })
+    }
+  },
+  // 删除用户
+  async deleteUser(req, res, next) {
+    let { id } = req.query
+    if (id) {
+      result = await User.findByIdAndDelete({ _id: id })
+      if (!result) return res.send({ code: 422, msg: result })
+      res.send({ code: 200, msg: '删除成功', data: result })
+    } else {
+      res.send({ code: 422, msg: '请选择用户' })
     }
   },
   // 获取用户信息

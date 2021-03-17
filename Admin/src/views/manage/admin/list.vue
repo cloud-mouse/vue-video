@@ -82,12 +82,9 @@
           <template slot-scope="scope">
             <el-button
               size="mini"
-              @click.native="showDialog('detail', scope.row)"
-            >查看</el-button>
-            <!-- <el-button
-              size="mini"
+              type="primary"
               @click.native="showDialog('edit', scope.row)"
-            >编辑</el-button> -->
+            >编辑</el-button>
             <el-button
               size="mini"
               type="danger"
@@ -112,6 +109,15 @@
     <!-- 管理员新增，详情，编辑弹框 -->
     <el-dialog v-dialogDrag center :title="dialogType=='add'? '新增管理员': dialogType=='edit'? '编辑管理员': '管理员详情'" :visible.sync="dialogFormVisible">
       <el-form ref="form" :model="form" :rules="rules" label-width="100px" label-position="rigth" size="small">
+        <el-form-item label="头像">
+          <img-upload
+            :disabled="dialogType=='detail'"
+            :img-data="form.avatar"
+            :pic-max="1"
+            @chooseImg="imageChoose"
+          />
+        </el-form-item>
+
         <el-form-item label="登录账号" prop="username">
           <el-input v-model="form.username " :disabled="dialogType=='detail'" />
         </el-form-item>
@@ -138,6 +144,13 @@
             />
           </el-select>
         </el-form-item>
+        <el-form-item label="是否启用">
+          <el-switch
+            v-model="form.status"
+            active-value="1"
+            inactive-value="0"
+          />
+        </el-form-item>
         <el-form-item>
           <el-button v-if="dialogType!=='detail'" type="primary" @click="onSubmit('form')">保存</el-button>
           <el-button v-else type="primary" @click="dialogType='edit'">编辑</el-button>
@@ -152,7 +165,12 @@
 import { adminApi, rolesApi } from '@/api/manage'
 import { validPhone } from '@/utils/validate'
 import { formatTime } from '@/utils'
+import ImgUpload from '@/components/ImgUpload'
+
 export default {
+  components: {
+    ImgUpload
+  },
   filters: {
     timeFormat(time) {
       return formatTime(new Date(time))
@@ -183,7 +201,8 @@ export default {
         phone: '',
         password: '',
         avatar: '',
-        role: ''
+        role: '',
+        status: '1'
       },
       selectRole: {},
       pageSize: 10,
@@ -216,7 +235,8 @@ export default {
           username: '',
           password: '',
           avatar: '',
-          role: ''
+          role: '',
+          status: '1'
         }
       }
     }
@@ -229,6 +249,7 @@ export default {
     fetchData() {
       // 获取管理员列表
       adminApi.getAdminList({
+        keywords: this.keywords,
         pageSize: this.pageSize,
         currentPage: this.currentPage
       }).then(res => {
@@ -255,6 +276,10 @@ export default {
     },
     roleSelect(e) {
       this.form.role = e._id
+    },
+    // 图片上传模块
+    imageChoose(img) {
+      this.form.avatar = img
     },
     onSubmit(formName) {
       const _this = this
