@@ -152,45 +152,47 @@ export default {
         font-size: 14px;
       }
       .movie-list {
-        display: flex;
-        justify-content: space-between;
-        flex-wrap: wrap;
-      }
-      .movie-item {
-        width: 32%;
-        box-shadow: 0 0 10px 2px #f5f5f5;
-        border-radius: 8px;
-        margin-bottom: 10px;
-        font-size: 14px;
-        overflow: hidden;
-        position: relative;
-        img {
-          width: 100%;
-          height: 120px;
-          display: block;
-        }
-        .mv-info {
-          .mv-name {
-            font-size: 14px;
-            padding: 0 5px;
-            display: -webkit-box;
-            -webkit-box-orient: vertical;
-            -webkit-line-clamp: 1;
-            overflow: hidden;
-            height: 30px;
-            line-height: 30px;
+        .movie-item {
+          width: 32%;
+          box-shadow: 0 0 10px 2px #f5f5f5;
+          border-radius: 8px;
+          margin-bottom: 10px;
+          font-size: 14px;
+          overflow: hidden;
+          position: relative;
+          display: inline-block;
+          margin-right: 2%;
+          &:nth-of-type(3n) {
+            margin-right: 0;
           }
-        }
-        .episodes {
-          position: absolute;
-          bottom: 30px;
-          right: 0;
-          padding: 2px;
-          color: #fff;
-          font-size: 12px;
-          background: rgba(0, 0, 0, 0.26);
-          width: 100%;
-          text-align: right;
+          img {
+            width: 100%;
+            height: 120px;
+            display: block;
+          }
+          .mv-info {
+            .mv-name {
+              font-size: 14px;
+              padding: 0 5px;
+              display: -webkit-box;
+              -webkit-box-orient: vertical;
+              -webkit-line-clamp: 1;
+              overflow: hidden;
+              height: 30px;
+              line-height: 30px;
+            }
+          }
+          .episodes {
+            position: absolute;
+            bottom: 30px;
+            right: 0;
+            padding: 2px;
+            color: #fff;
+            font-size: 12px;
+            background: rgba(0, 0, 0, 0.26);
+            width: 100%;
+            text-align: right;
+          }
         }
       }
     }

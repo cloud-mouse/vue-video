@@ -16,6 +16,7 @@
       <div class="cell-box">
         <!-- <cell-item icon-name="site-icon" left-text="地址管理" path="/addressList" /> -->
         <cell-item left-text="关于我们" path="/about" />
+        <cell-item left-text="意见建议" path="/feedback" />
       </div>
     </div>
 
@@ -145,11 +146,12 @@ export default {
     color: #999;
   }
   .cell-box {
-    padding: 10px;
+    padding: 0 10px;
     border-radius: 10px;
     background: #fff;
     .cell-item {
       border: none;
+      padding: 10px 0;
     }
   }
 }

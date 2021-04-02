@@ -25,7 +25,7 @@ app.use('/public', express.static(path.join(__dirname, 'public')));
 app.use('/admin', express.static(path.join(__dirname, 'views/admin'))); // 后台访问地址
 app.use('/web', express.static(path.join(__dirname, 'views/web'))); // h5访问地址
 
-app.use('/', indexRouter);
+app.use('/', express.static(path.join(__dirname, 'views/web')));
 app.use('/users', usersRouter);
 app.use('/admin-api', adminRouter);
 app.use('/web-api', webRouter);

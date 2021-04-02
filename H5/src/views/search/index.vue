@@ -2,6 +2,7 @@
   <div class="search">
     <div class="search-box">
       <van-search
+        ref="searchInput"
         v-model="keywords"
         shape="round"
         background="#fff"
@@ -11,7 +12,13 @@
     </div>
     <div class="search-content">
       <div v-if="!showResult" class="search-history">
-        <div class="title">搜索历史</div>
+        <div class="title">
+          <span>搜索历史</span>
+          <span
+            class="remove-all"
+            @click="showConfirm"
+          ><van-icon name="delete-o" />清空历史</span>
+        </div>
         <div class="history-keys">
           <div
             v-for="(item, index) in searchHistory"
@@ -54,6 +61,7 @@
 
 <script>
 import { movieApi } from '@/api/movie'
+import { Dialog } from 'vant'
 export default {
   name: 'Search',
   data() {
@@ -81,7 +89,12 @@ export default {
   },
   created() {
     const val = localStorage.getItem('search-history')
-    this.searchHistory = val.split(',')
+    if (val) this.searchHistory = val.split(',')
+  },
+  mounted() {
+    this.$nextTick(() => {
+      this.$refs.searchInput.focus()
+    })
   },
   methods: {
     onLoad() {
@@ -94,6 +107,22 @@ export default {
         this.getList()
       }, 2000)
     },
+    showConfirm() {
+      Dialog.confirm({
+        title: '提示',
+        message: '是否要清空搜索历史?',
+        confirmButtonColor: '#335eea',
+        confirmButtonText: '清空'
+      })
+        .then(() => {
+          // on confirm
+          localStorage.removeItem('search-history')
+          this.searchHistory = []
+        })
+        .catch(() => {
+          // on cancel
+        })
+    },
     onRefresh() {
       // 清空列表数据
       this.finished = false
@@ -104,6 +133,10 @@ export default {
     },
     setKeywords(item) {
       this.keywords = item
+    },
+    // 查看详情
+    toDetail(id) {
+      this.$router.push({ path: `/movie/detail`, query: { id }})
     },
     doSearch() {
       if (this.searchHistory.indexOf(this.keywords) === -1) {
@@ -148,6 +181,11 @@ export default {
         color: #333;
         font-weight: bold;
         padding: 10px 0;
+        display: flex;
+        justify-content: space-between;
+        .remove-all {
+          color: #335eea;
+        }
       }
       .history-keys {
         .history-key {

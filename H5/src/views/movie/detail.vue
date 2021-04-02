@@ -11,7 +11,7 @@
           >{{ movieDetail.name
           }}<span
             class="mv-recommend"
-          >({{ movieDetail.recommend === '1' ? '已完结' : '连载中' }})</span></span>
+          >({{ movieDetail.isOver === '1' ? '已完结' : '连载中' }})</span></span>
           <span @click="showProfile = true">简介 <van-icon name="arrow" /></span>
         </div>
         <div class="mv-info">
@@ -26,7 +26,7 @@
       </div>
       <div class="mv-episodes">
         <div class="head-title">
-          <span>剧集</span>
+          <span>播放列表</span>
           <span
             @click="showAllEpisodes = true"
           >查看全部 <van-icon

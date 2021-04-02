@@ -61,6 +61,12 @@ const constantRoutes = [
     meta: { title: '用户注册' }
   },
   {
+    path: '/feedback',
+    name: 'Feedback',
+    component: () => import('@/views/user/feedback'),
+    meta: { title: '反馈建议' }
+  },
+  {
     path: '/about',
     name: 'About',
     component: () => import('@/views/user/About'),

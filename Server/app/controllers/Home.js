@@ -9,10 +9,11 @@ const getChildren = async (item) => {
       item.movieList = []
       for (let j = 0; j < item.type.length; j++) {
         let list = await Movie.find({ movie_class: item._id, movie_type: item.type[j] }).limit(9)
+        if(list.length) {
         item.movieList.push({
           name: item.type[j],
           list: list
-        })
+        })}
       }
       return item
     }

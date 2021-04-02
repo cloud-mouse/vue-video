@@ -229,7 +229,7 @@ export default {
       const formData = new FormData()
       formData.append('file', e.file)
       formData.append('class_id', id[id.length - 1])
-      galleryApi.addImage(formData).then(res => {
+      galleryApi.addItem(formData).then(res => {
         if (res.code !== 200) {
           this.$message({
             message: res.data.msg,
