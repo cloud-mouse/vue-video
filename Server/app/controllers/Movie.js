@@ -41,6 +41,10 @@ const getList = async (req, res, next) => {
     res.send({ code: 200, msg: '获取成功', data: { list: videos, count: count } })
   } else {
     let video = await Movie.findById(id).populate('movie_class')
+    if(!video) return res.send({ code: 400, msg: '查询失败' })
+    let pv = video.pv
+    pv+=1
+    await Movie.findByIdAndUpdate(id, {pv: pv})
     res.send({ code: 200, msg: '获取成功', data: video })
   }
 }

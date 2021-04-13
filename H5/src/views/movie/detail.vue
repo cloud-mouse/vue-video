@@ -1,7 +1,13 @@
 <template>
   <div class="video-detail">
     <div class="video-box">
-      <d-player ref="player" :autoplay="autoplay" :video="video" @play="play" />
+      <d-player
+        ref="player"
+        :autoplay="autoplay"
+        :video="video"
+        @ended="ended"
+        @play="play"
+      />
     </div>
     <div class="video-content">
       <div class="head-title">
@@ -21,7 +27,8 @@
           >分类：{{ movieDetail.movieClass.name }} |</span>
           <!-- <span class="mv-date"> 年份：{{ movieDetail.years }} |</span> -->
           <span class="mv-uptime">
-            更新时间：{{ movieDetail.updateTime | timeFormat }}</span>
+            <strong>更新时间：</strong>{{ movieDetail.updateTime | timeFormat }}</span>
+          <span class="mv-pv"> <strong>播放量：</strong>{{ movieDetail.pv }}</span>
         </div>
       </div>
       <div class="mv-episodes">
@@ -41,6 +48,9 @@
             @click="setCurrent(item, index)"
           >
             {{ index + 1 }}
+          </div>
+          <div v-if="!movieEpisodes.length" style="text-align: center">
+            暂无剧集
           </div>
         </div>
       </div>
@@ -75,6 +85,10 @@
           @click="setCurrent(item, index)"
         >
           {{ index + 1 }}
+        </div>
+
+        <div v-if="!movieEpisodes.length" style="text-align: center">
+          暂无剧集
         </div>
       </div>
     </van-popup>
@@ -115,16 +129,25 @@ export default {
   mounted() {
     this._initData()
   },
+  // 取消当前视频播放
+  beforeDestroy() {
+    this.ended()
+  },
   methods: {
     play() {
       console.log('开始播放...')
     },
+    ended() {
+      console.log('结束播放')
+    },
     async _initData() {
+      this.ended()
+      // 获取影视详情
       await movieApi.getMovie({ id: this.$route.query.id }).then(res => {
         this.movieDetail = res.data
         this.video.pic = res.data.cover
       })
-
+      // 获取影视剧集
       await movieEpisodesApi
         .getMovieEpisodes({
           movie_id: this.$route.query.id
@@ -132,15 +155,17 @@ export default {
         .then(res => {
           this.movieEpisodes = res.data.list
           this.count = res.data.count
-          this.video.url = res.data.list[0].url
+          this.video.url = res.data.list.length && res.data.list[0].url
           this.$nextTick(() => {
             this.$refs.player._initPlayer()
           })
-          document.title = `${this.movieDetail.name} - ${res.data.list[0].name}`
+          document.title = `${this.movieDetail.name} - ${res.data.list.length &&
+            res.data.list[0].name}`
         })
     },
     // 设置当前播放集
     setCurrent(item, i) {
+      this.ended()
       this.video.url = item.url
       this.$nextTick(() => {
         this.$refs.player._initPlayer()
@@ -176,8 +201,8 @@ export default {
           color: #333;
           font-weight: bold;
         }
-        .mv-recommend{
-          font-size: 12px
+        .mv-recommend {
+          font-size: 12px;
         }
       }
       .mv-info {

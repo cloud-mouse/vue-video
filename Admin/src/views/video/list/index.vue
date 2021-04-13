@@ -50,6 +50,7 @@
             <span v-else>未选择分类</span>
           </template>
         </el-table-column>
+        <el-table-column prop="pv" label="浏览量" align="center" />
         <el-table-column prop="sort" label="排序" align="center" />
         <el-table-column label="首页推荐" align="center">
           <template slot-scope="scope">

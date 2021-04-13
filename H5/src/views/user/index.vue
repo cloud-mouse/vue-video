@@ -1,7 +1,11 @@
 <template>
   <div class="user-view">
     <div class="top-info">
-      <img class="user-avator" :src="avatar || require('../../assets/images/avatar.png')" alt="">
+      <img
+        class="user-avator"
+        :src="avatar || require('../../assets/images/avatar.png')"
+        alt=""
+      >
       <div v-if="userInfo.account" class="accout-info">
         <p class="user-name" @click="toUserInfo">{{ name || '完善信息 >' }}</p>
         <p v-if="userInfo.account" class="user-account">
@@ -20,7 +24,7 @@
       </div>
     </div>
 
-    <div class="logout" v-if="userInfo.account">
+    <div v-if="userInfo.account" class="logout">
       <span @click="logout">退出登录</span>
     </div>
   </div>
@@ -139,7 +143,7 @@ export default {
       }
     }
   }
-  .logout{
+  .logout {
     padding: 20px;
     text-align: center;
     font-size: 14px;

@@ -9,9 +9,9 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import '@/permission' // 鉴权
-import VueDPlayer from 'vue-dplayer'
-import 'vue-dplayer/dist/vue-dplayer.css'
-Vue.use(VueDPlayer)
+// import VueDPlayer from 'vue-dplayer'
+// import 'vue-dplayer/dist/vue-dplayer.css'
+// Vue.use(VueDPlayer)
 
 window.Hls = require('hls.js')
 
