@@ -67,8 +67,8 @@ export default {
     }
     return {
       loginForm: {
-        username: 'zh4554',
-        password: '123456'
+        username: '',
+        password: ''
       },
       baseUrl: process.env.VUE_APP_BASE_API,
       loginRules: {

@@ -146,6 +146,7 @@ export default {
       await movieApi.getMovie({ id: this.$route.query.id }).then(res => {
         this.movieDetail = res.data
         this.video.pic = res.data.cover
+        
       })
       // 获取影视剧集
       await movieEpisodesApi
@@ -156,6 +157,13 @@ export default {
           this.movieEpisodes = res.data.list
           this.count = res.data.count
           this.video.url = res.data.list.length && res.data.list[0].url
+          if(this.video.url) {
+            if(this.video.url.indexOf('mp4') > -1) {
+              this.video.type = 'mp4'
+            }else{
+              this.video.type = 'hls'
+            }
+          }
           this.$nextTick(() => {
             this.$refs.player._initPlayer()
           })
@@ -167,6 +175,13 @@ export default {
     setCurrent(item, i) {
       this.ended()
       this.video.url = item.url
+      if(item.url) {
+        if(item.url.indexOf('mp4') > -1) {
+          this.video.type = 'mp4'
+        }else{
+          this.video.type = 'hls'
+        }
+      }
       this.$nextTick(() => {
         this.$refs.player._initPlayer()
       })
