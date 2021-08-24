@@ -541,7 +541,7 @@ export default {
       right: -5px;
     }
   }
-/deep/ .el-tree {
+::v-deep .el-tree {
   background: none;
   margin-bottom: 20px;
 }

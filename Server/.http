@@ -1,11 +1,11 @@
-@url=http://212.129.244.20:3001
+@url=http://localhost:3001
 
 ### 用户注册
 POST {{url}}/admin-api/admin/register
 Content-Type: application/json
 
 {
-  "username": "zh4554",
+  "username": "admin",
   "password": "123456",
   "role": "60386f65e70094162065883f"
 }
@@ -15,7 +15,7 @@ POST {{url}}/admin-api/admin/login
 Content-Type: application/json
 
 {
-  "username": "zh4554",
+  "username": "admin",
   "password": "123456"
 }
 

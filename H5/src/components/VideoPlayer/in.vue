@@ -112,7 +112,7 @@ export default {
   margin: 0 auto;
   text-align: center;
 }
-/deep/.dplayer-danmaku-item {
+::v-deep.dplayer-danmaku-item {
   span {
     border: none !important; //去掉弹幕边框
   }
